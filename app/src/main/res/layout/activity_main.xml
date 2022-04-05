@@ -11,36 +11,37 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         tools:context=".tasks.TasksActivity"
-        >
+        tools:openDrawer="start">
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/Theme.TodoApp.AppBarOverlay">
+                android:layout_height="wrap_content">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
-                    app:popupTheme="@style/Theme.TodoApp.PopupOverlay" />
-
+                    android:layout_height="wrap_content"
+                    android:minHeight="?attr/actionBarSize"
+                    android:theme="@style/Toolbar"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
             </com.google.android.material.appbar.AppBarLayout>
-        </LinearLayout>
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_fragment_content_main"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph" />
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/nav_host_fragment_content_main"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph" />
+        </LinearLayout>
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
@@ -49,8 +50,8 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/nav_header"
-            app:itemIconTint="?attr/colorPrimary"
-            app:itemTextColor="?attr/colorPrimary"
+            app:itemIconTint="@drawable/drawer_item_color"
+            app:itemTextColor="@drawable/drawer_item_color"
             app:menu="@menu/drawer_actions" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
