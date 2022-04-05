@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/tasks_fragment_dest"
-        android:name="com.example.todoapp.FirstFragment"
+        android:name="com.example.todoapp.tasks.TasksFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_tasks">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"

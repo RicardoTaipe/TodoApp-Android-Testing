@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import com.example.todoapp.data.Task
 import com.example.todoapp.data.Result
 
-interface TaskRepository {
+interface TasksRepository {
 
     fun observeTasks(): LiveData<Result<List<Task>>>
 

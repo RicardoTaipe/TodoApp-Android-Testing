@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.example.todoapp.data.Result
 import com.example.todoapp.data.Result.Error
 import com.example.todoapp.data.Result.Success
@@ -38,12 +39,12 @@ object TasksRemoteDataSource : TasksDataSource {
     }
 
     override fun observeTask(taskId: String): LiveData<Result<Task>> {
-        return Transformations.map(observableTasks) { tasks ->
+        return observableTasks.map { tasks ->
             when (tasks) {
                 is Result.Loading -> Result.Loading
                 is Error -> Error(tasks.exception)
                 is Success -> {
-                    val task = tasks.data.firstOrNull { it.id == taskId }
+                    val task = tasks.data.firstOrNull() { it.id == taskId }
                         ?: return@map Error(Exception("Not found"))
                     Success(task)
                 }

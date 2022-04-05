@@ -2,6 +2,7 @@ package com.example.todoapp.data.source.local
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.example.todoapp.data.source.TasksDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -17,13 +18,13 @@ class TasksLocalDataSource(
 ) : TasksDataSource {
 
     override fun observeTasks(): LiveData<Result<List<Task>>> {
-        return Transformations.map(tasksDao.observeTasks()) {
+        return tasksDao.observeTasks().map {
             Success(it)
         }
     }
 
     override fun observeTask(taskId: String): LiveData<Result<Task>> {
-        return Transformations.map(tasksDao.observeTaskById(taskId)) {
+        return tasksDao.observeTaskById(taskId).map {
             Success(it)
         }
     }
