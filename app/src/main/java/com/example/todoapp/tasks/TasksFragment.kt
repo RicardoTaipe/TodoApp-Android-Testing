@@ -5,6 +5,7 @@ import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.todoapp.EventObserver
 import com.example.todoapp.R
@@ -74,22 +75,22 @@ class TasksFragment : Fragment() {
             openTaskDetails(it)
         })
         viewModel.newTaskEvent.observe(viewLifecycleOwner, EventObserver {
-            //navigateToAddNewTask()
+            navigateToAddNewTask()
         })
     }
 
     private fun openTaskDetails(taskId: String) {
-        //val action = TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(taskId)
-        //findNavController().navigate(action)
+        val action = TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(taskId)
+        findNavController().navigate(action)
     }
 
     private fun navigateToAddNewTask() {
-        /* val action = TasksFragmentDirections
-             .actionTasksFragmentToAddEditTaskFragment(
-                 null,
-                 resources.getString(R.string.add_task)
-             )
-         findNavController().navigate(action)*/
+        val action = TasksFragmentDirections
+            .actionTasksFragmentToAddEditTaskFragment(
+                null,
+                resources.getString(R.string.add_task)
+            )
+        findNavController().navigate(action)
     }
 
     private fun setupFab() {
