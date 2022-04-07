@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.todoapp.R
 import com.example.todoapp.TodoApplication
 import com.example.todoapp.databinding.StatisticsFragmentBinding
 import com.example.todoapp.util.setupRefreshLayout
