@@ -1,32 +1,57 @@
 package com.example.todoapp.addedittask
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.todoapp.R
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.example.todoapp.EventObserver
+import com.example.todoapp.databinding.AddEditTaskFragmentBinding
+import com.example.todoapp.tasks.ADD_EDIT_RESULT_OK
+import com.example.todoapp.util.setupRefreshLayout
+import com.example.todoapp.util.setupSnackbar
+import com.google.android.material.snackbar.Snackbar
 
 class AddEditTaskFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = AddEditTaskFragment()
-    }
+    private lateinit var binding: AddEditTaskFragmentBinding
 
-    private lateinit var viewModel: AddEditTaskViewModel
+    private val args: AddEditTaskFragmentArgs by navArgs()
+
+    private val viewModel by viewModels<AddEditTaskViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.add_edit_task_fragment, container, false)
+    ): View {
+        binding = AddEditTaskFragmentBinding.inflate(inflater, container, false).apply {
+            viewmodel = viewModel
+        }
+        binding.lifecycleOwner = viewLifecycleOwner
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(AddEditTaskViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupSnackbar()
+        setupNavigation()
+        this.setupRefreshLayout(binding.refreshLayout)
+        viewModel.start(args.taskId)
     }
 
+    private fun setupSnackbar() {
+        view?.setupSnackbar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+    }
+
+    private fun setupNavigation() {
+        viewModel.taskUpdatedEvent.observe(viewLifecycleOwner, EventObserver {
+            val action = AddEditTaskFragmentDirections
+                .actionAddEditTaskFragmentToTasksFragment().setUserMessage(
+                    ADD_EDIT_RESULT_OK
+                )
+            findNavController().navigate(action)
+        })
+    }
 }
