@@ -53,8 +53,6 @@ class TasksLocalDataSourceTest {
         database.close()
     }
 
-    // runBlocking used here because of https://github.com/Kotlin/kotlinx.coroutines/issues/1204
-    // TODO replace with runBlockingTest once issue is resolved
     @Test
     fun saveTask_retrievesTask() = runTest {
         // GIVEN - a new task saved in the database
@@ -87,5 +85,78 @@ class TasksLocalDataSourceTest {
         result as Success
         assertThat(result.data.title, `is`(newTask.title))
         assertThat(result.data.isCompleted, `is`(true))
+    }
+
+    @Test
+    fun activateTask_retrievedTaskIsActive() = runTest {
+        // Given a new completed task in the persistent repository
+        val newTask = Task("Some title", "Some description", true)
+        localDataSource.saveTask(newTask)
+
+        localDataSource.activateTask(newTask)
+
+        // Then the task can be retrieved from the persistent repository and is active
+        val result = localDataSource.getTask(newTask.id)
+
+        assertThat(result.succeeded, `is`(true))
+        result as Success
+
+        assertThat(result.data.title, `is`("Some title"))
+        assertThat(result.data.isCompleted, `is`(false))
+    }
+
+    @Test
+    fun clearCompletedTask_taskNotRetrievable() = runTest {
+        // Given 2 new completed tasks and 1 active task in the persistent repository
+        val newTask1 = Task("title")
+        val newTask2 = Task("title2")
+        val newTask3 = Task("title3")
+        localDataSource.saveTask(newTask1)
+        localDataSource.completeTask(newTask1)
+        localDataSource.saveTask(newTask2)
+        localDataSource.completeTask(newTask2)
+        localDataSource.saveTask(newTask3)
+        // When completed tasks are cleared in the repository
+        localDataSource.clearCompletedTasks()
+
+        // Then the completed tasks cannot be retrieved and the active one can
+        assertThat(localDataSource.getTask(newTask1.id).succeeded, `is`(false))
+        assertThat(localDataSource.getTask(newTask2.id).succeeded, `is`(false))
+
+        val result3 = localDataSource.getTask(newTask3.id)
+
+        assertThat(result3.succeeded, `is`(true))
+        result3 as Success
+
+        assertThat(result3.data, `is`(newTask3))
+    }
+
+    @Test
+    fun deleteAllTasks_emptyListOfRetrievedTask() = runTest {
+        // Given a new task in the persistent repository and a mocked callback
+        val newTask = Task("title")
+
+        localDataSource.saveTask(newTask)
+
+        // When all tasks are deleted
+        localDataSource.deleteAllTasks()
+
+        // Then the retrieved tasks is an empty list
+        val result = localDataSource.getTasks() as Success
+        assertThat(result.data.isEmpty(), `is`(true))
+    }
+
+    @Test
+    fun getTasks_retrieveSavedTasks() = runTest {
+        // Given 2 new tasks in the persistent repository
+        val newTask1 = Task("title")
+        val newTask2 = Task("title")
+
+        localDataSource.saveTask(newTask1)
+        localDataSource.saveTask(newTask2)
+        // Then the tasks can be retrieved from the persistent repository
+        val results = localDataSource.getTasks() as Success<List<Task>>
+        val tasks = results.data
+        assertThat(tasks.size, `is`(2))
     }
 }

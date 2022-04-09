@@ -27,7 +27,8 @@ class FakeDataSource(var tasks: MutableList<Task>? = mutableListOf()) : TasksDat
     }
 
     override suspend fun getTask(taskId: String): Result<Task> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tasks?.firstOrNull { it.id == taskId }?.let { return Success(it) }
+        return Error(Exception("Task not found"))
     }
 
     override suspend fun refreshTask(taskId: String) {
@@ -39,23 +40,23 @@ class FakeDataSource(var tasks: MutableList<Task>? = mutableListOf()) : TasksDat
     }
 
     override suspend fun completeTask(task: Task) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tasks?.firstOrNull { it.id == task.id }?.let { it.isCompleted = true }
     }
 
     override suspend fun completeTask(taskId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tasks?.firstOrNull { it.id == taskId }?.let { it.isCompleted = true }
     }
 
     override suspend fun activateTask(task: Task) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tasks?.firstOrNull { it.id == task.id }?.let { it.isCompleted = false }
     }
 
     override suspend fun activateTask(taskId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tasks?.firstOrNull { it.id == taskId }?.let { it.isCompleted = false }
     }
 
     override suspend fun clearCompletedTasks() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tasks?.removeIf { it.isCompleted }
     }
 
     override suspend fun deleteAllTasks() {
@@ -63,7 +64,7 @@ class FakeDataSource(var tasks: MutableList<Task>? = mutableListOf()) : TasksDat
     }
 
     override suspend fun deleteTask(taskId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tasks?.removeIf { it.id == taskId }
     }
 
 }

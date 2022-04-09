@@ -1,5 +1,6 @@
 package com.example.todoapp.data.source
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
@@ -96,6 +97,7 @@ class FakeAndroidTestRepository : TasksRepository {
         refreshTasks()
     }
 
+    @VisibleForTesting
     fun addTasks(vararg tasks: Task) {
         for (task in tasks) {
             tasksServiceData[task.id] = task

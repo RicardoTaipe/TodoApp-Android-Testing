@@ -6,14 +6,14 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.data.Task
 
-@BindingAdapter("app:items")
+@BindingAdapter("items")
 fun setItems(recyclerView: RecyclerView, items: List<Task>?) {
     items?.let {
         (recyclerView.adapter as TasksAdapter).submitList(it)
     }
 }
 
-@BindingAdapter("app:completedTask")
+@BindingAdapter("completedTask")
 fun setStyle(textView: TextView, enabled: Boolean) {
     if (enabled) {
         textView.paintFlags = textView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG

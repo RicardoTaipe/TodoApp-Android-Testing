@@ -52,11 +52,29 @@ class TaskDaoTest {
         val loaded = database.taskDao().getTaskById(task.id)
 
         // THEN - The loaded data contains the expected values
-        assertThat<Task>(loaded as Task, notNullValue())
+        assertThat(loaded as Task, notNullValue())
         assertThat(loaded.id, `is`(task.id))
         assertThat(loaded.title, `is`(task.title))
         assertThat(loaded.description, `is`(task.description))
         assertThat(loaded.isCompleted, `is`(task.isCompleted))
+    }
+
+    @Test
+    fun insertTaskReplacesOnConflict() = runTest {
+        // Given that a task is inserted
+        val task = Task("title", "description")
+        database.taskDao().insertTask(task)
+
+        // When a task with the same id is inserted
+        val newTask = Task("title2", "description2", true, task.id)
+        database.taskDao().insertTask(newTask)
+
+        // THEN - The loaded data contains the expected values
+        val loaded = database.taskDao().getTaskById(task.id)
+        assertThat(loaded?.id, `is`(task.id))
+        assertThat(loaded?.title, `is`("title2"))
+        assertThat(loaded?.description, `is`("description2"))
+        assertThat(loaded?.isCompleted, `is`(true))
     }
 
     @Test
@@ -75,5 +93,79 @@ class TaskDaoTest {
         assertThat(loaded?.title, `is`("new title"))
         assertThat(loaded?.description, `is`("new description"))
         assertThat(loaded?.isCompleted, `is`(true))
+    }
+
+    @Test
+    fun insertTaskAndGetTasks() = runTest {
+        // GIVEN - insert a task
+        val task = Task("title", "description")
+        database.taskDao().insertTask(task)
+
+        // WHEN - Get tasks from the database
+        val tasks = database.taskDao().getTasks()
+
+        // THEN - There is only 1 task in the database, and contains the expected values
+        assertThat(tasks.size, `is`(1))
+        assertThat(tasks[0].id, `is`(task.id))
+        assertThat(tasks[0].title, `is`(task.title))
+        assertThat(tasks[0].description, `is`(task.description))
+        assertThat(tasks[0].isCompleted, `is`(task.isCompleted))
+    }
+
+    @Test
+    fun updateCompletedAndGetById() = runTest {
+        // When inserting a task
+        val task = Task("title", "description", true)
+        database.taskDao().insertTask(task)
+
+        // When the task is updated
+        database.taskDao().updateCompleted(task.id, false)
+
+        // THEN - The loaded data contains the expected values
+        val loaded = database.taskDao().getTaskById(task.id)
+        assertThat(loaded?.id, `is`(task.id))
+        assertThat(loaded?.title, `is`(task.title))
+        assertThat(loaded?.description, `is`(task.description))
+        assertThat(loaded?.isCompleted, `is`(false))
+    }
+
+    @Test
+    fun deleteTaskByIdAndGettingTasks() = runTest {
+        // Given a task inserted
+        val task = Task("title", "description")
+        database.taskDao().insertTask(task)
+
+        // When deleting a task by id
+        database.taskDao().deleteTaskById(task.id)
+
+        // THEN - The list is empty
+        val tasks = database.taskDao().getTasks()
+        assertThat(tasks.isEmpty(), `is`(true))
+    }
+
+    @Test
+    fun deleteTasksAndGettingTasks() = runTest {
+        // Given a task inserted
+        database.taskDao().insertTask(Task("title", "description"))
+
+        // When deleting all tasks
+        database.taskDao().deleteTasks()
+
+        // THEN - The list is empty
+        val tasks = database.taskDao().getTasks()
+        assertThat(tasks.isEmpty(), `is`(true))
+    }
+
+    @Test
+    fun deleteCompletedTasksAndGettingTasks() = runTest {
+        // Given a completed task inserted
+        database.taskDao().insertTask(Task("completed", "task", true))
+
+        // When deleting completed tasks
+        database.taskDao().deleteCompletedTasks()
+
+        // THEN - The list is empty
+        val tasks = database.taskDao().getTasks()
+        assertThat(tasks.isEmpty(), `is`(true))
     }
 }

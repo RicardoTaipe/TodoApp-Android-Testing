@@ -25,7 +25,7 @@ class TasksViewModel(
                 _dataLoading.value = false
             }
         }
-        tasksRepository.observeTasks().switchMap { filterTasks(it) }
+        tasksRepository.observeTasks().distinctUntilChanged().switchMap { filterTasks(it) }
 
     }
 
@@ -189,20 +189,11 @@ class TasksViewModel(
     }
 
     private fun filterItems(tasks: List<Task>, filteringType: TasksFilterType): List<Task> {
-        val tasksToShow = ArrayList<Task>()
-        // We filter the tasks based on the requestType
-        for (task in tasks) {
-            when (filteringType) {
-                TasksFilterType.ALL_TASKS -> tasksToShow.add(task)
-                TasksFilterType.ACTIVE_TASKS -> if (task.isActive) {
-                    tasksToShow.add(task)
-                }
-                TasksFilterType.COMPLETED_TASKS -> if (task.isCompleted) {
-                    tasksToShow.add(task)
-                }
-            }
+        return when (filteringType) {
+            TasksFilterType.ALL_TASKS -> tasks
+            TasksFilterType.ACTIVE_TASKS -> tasks.filter { it.isActive }
+            TasksFilterType.COMPLETED_TASKS -> tasks.filter { it.isCompleted }
         }
-        return tasksToShow
     }
 
     fun refresh() {
