@@ -117,7 +117,7 @@ class TasksFragment : Fragment() {
                 viewModel.loadTasks(true)
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
 
 
