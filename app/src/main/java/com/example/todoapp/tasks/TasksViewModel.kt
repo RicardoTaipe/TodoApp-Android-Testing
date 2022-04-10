@@ -180,14 +180,6 @@ class TasksViewModel(
         }
     }
 
-    private fun filterItems(tasks: List<Task>, filteringType: TasksFilterType): List<Task> {
-        return when (filteringType) {
-            TasksFilterType.ALL_TASKS -> tasks
-            TasksFilterType.ACTIVE_TASKS -> tasks.filter { it.isActive }
-            TasksFilterType.COMPLETED_TASKS -> tasks.filter { it.isCompleted }
-        }
-    }
-
     fun refresh() {
         loadTasks(true)
     }
