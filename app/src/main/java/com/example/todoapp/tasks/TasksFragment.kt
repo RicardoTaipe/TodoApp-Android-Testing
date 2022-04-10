@@ -51,6 +51,7 @@ class TasksFragment : Fragment() {
         setupRefreshLayout(binding.refreshLayout, binding.tasksList)
         setupNavigation()
         setupFab()
+        viewModel.loadTasks(true)
     }
 
     private fun setupSnackbar() {
