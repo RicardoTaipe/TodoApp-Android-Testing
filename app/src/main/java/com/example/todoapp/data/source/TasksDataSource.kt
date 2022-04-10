@@ -9,8 +9,6 @@ interface TasksDataSource {
 
     suspend fun getTask(taskId: String): Result<Task>
 
-    suspend fun refreshTask(taskId: String)
-
     suspend fun saveTask(task: Task)
 
     suspend fun completeTask(task: Task)
