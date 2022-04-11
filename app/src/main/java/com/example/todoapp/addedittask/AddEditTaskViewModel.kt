@@ -1,19 +1,20 @@
 package com.example.todoapp.addedittask
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.todoapp.Event
 import com.example.todoapp.R
 import com.example.todoapp.TodoApplication
 import com.example.todoapp.data.Result
 import com.example.todoapp.data.Task
+import com.example.todoapp.domain.GetTaskUseCase
+import com.example.todoapp.domain.SaveTaskUseCase
 import kotlinx.coroutines.launch
 
-class AddEditTaskViewModel(application: Application) : AndroidViewModel(application) {
-    private val tasksRepository = (application as TodoApplication).taskRepository
+class AddEditTaskViewModel(
+    private val getTaskUseCase: GetTaskUseCase,
+    private val saveUseCase: SaveTaskUseCase
+) : ViewModel() {
 
     // Two-way databinding, exposing MutableLiveData
     val title = MutableLiveData<String>()
@@ -58,7 +59,7 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
         _dataLoading.value = true
 
         viewModelScope.launch {
-            tasksRepository.getTask(taskId).let { result ->
+            getTaskUseCase(taskId).let { result ->
                 if (result is Result.Success) {
                     onTaskLoaded(result.data)
                 } else {
@@ -104,7 +105,7 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun createTask(newTask: Task) = viewModelScope.launch {
-        tasksRepository.saveTask(newTask)
+        saveUseCase(newTask)
         _taskUpdatedEvent.value = Event(Unit)
     }
 
@@ -113,7 +114,7 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
             throw RuntimeException("updateTask() was called but task is new.")
         }
         viewModelScope.launch {
-            tasksRepository.saveTask(task)
+            saveUseCase(task)
             _taskUpdatedEvent.value = Event(Unit)
         }
     }
