@@ -74,13 +74,15 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:orientation="vertical"
-                    android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}">
+                    android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}"
+                    tools:ignore="UseCompoundDrawables">
 
                     <ImageView
                         android:id="@+id/no_tasks_icon"
                         android:layout_width="96dp"
                         android:layout_height="96dp"
                         android:layout_gravity="center"
+                        tools:src="@drawable/logo_outline"
                         android:src="@{ContextCompat.getDrawable(context, viewmodel.noTaskIconRes)}"
                         android:contentDescription="@string/no_tasks_image_content_description" />
 
