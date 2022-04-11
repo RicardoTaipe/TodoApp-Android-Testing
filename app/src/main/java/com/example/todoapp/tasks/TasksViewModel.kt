@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import com.example.todoapp.Event
 import com.example.todoapp.R
-import com.example.todoapp.data.Result
 import com.example.todoapp.data.Result.Success
 import com.example.todoapp.data.Task
 import com.example.todoapp.domain.ActivateTaskUseCase
@@ -53,8 +52,6 @@ class TasksViewModel(
 
     private val _newTaskEvent = MutableLiveData<Event<Unit>>()
     val newTaskEvent: LiveData<Event<Unit>> = _newTaskEvent
-
-    private var resultMessageShown: Boolean = false
 
     // This LiveData depends on another so we can use a transformation.
     val empty: LiveData<Boolean> = Transformations.map(_items) {
@@ -146,13 +143,11 @@ class TasksViewModel(
     }
 
     fun showEditResultMessage(result: Int) {
-        if (resultMessageShown) return
         when (result) {
             EDIT_RESULT_OK -> showSnackbarMessage(R.string.successfully_saved_task_message)
             ADD_EDIT_RESULT_OK -> showSnackbarMessage(R.string.successfully_added_task_message)
             DELETE_RESULT_OK -> showSnackbarMessage(R.string.successfully_deleted_task_message)
         }
-        resultMessageShown = true
     }
 
     private fun showSnackbarMessage(message: Int) {

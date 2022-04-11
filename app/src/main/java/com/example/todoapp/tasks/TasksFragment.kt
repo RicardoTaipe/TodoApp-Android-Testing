@@ -135,6 +135,7 @@ class TasksFragment : Fragment() {
                         else -> TasksFilterType.ALL_TASKS
                     }
                 )
+                viewModel.loadTasks(false)
                 true
             }
             show()
