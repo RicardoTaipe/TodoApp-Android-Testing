@@ -7,20 +7,25 @@ import com.example.todoapp.R
 import com.example.todoapp.data.Result
 import com.example.todoapp.data.Result.Success
 import com.example.todoapp.data.Task
-import com.example.todoapp.data.source.TasksRepository
+import com.example.todoapp.domain.ActivateTaskUseCase
+import com.example.todoapp.domain.CompleteTaskUseCase
+import com.example.todoapp.domain.DeleteTaskUseCase
+import com.example.todoapp.domain.GetTaskUseCase
+import com.example.todoapp.util.wrapEspressoIdlingResource
 import kotlinx.coroutines.launch
 
 class TaskDetailViewModel(
-    private val tasksRepository: TasksRepository
+    private val getTaskUseCase: GetTaskUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val completeTaskUseCase: CompleteTaskUseCase,
+    private val activateTaskUseCase: ActivateTaskUseCase
 ) : ViewModel() {
-    private val _taskId = MutableLiveData<String>()
 
-    private val _task = _taskId.switchMap { taskId ->
-        tasksRepository.observeTask(taskId).map { computeResult(it) }
-    }
+    private val _task = MutableLiveData<Task?>()
     val task: LiveData<Task?> = _task
 
-    val isDataAvailable: LiveData<Boolean> = _task.map { it != null }
+    private val _isDataAvailable = MutableLiveData<Boolean>()
+    val isDataAvailable: LiveData<Boolean> = _isDataAvailable
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -34,14 +39,17 @@ class TaskDetailViewModel(
     private val _snackbarText = MutableLiveData<Event<Int>>()
     val snackbarText: LiveData<Event<Int>> = _snackbarText
 
+    private val taskId: String?
+        get() = _task.value?.id
+
     // This LiveData depends on another so we can use a transformation.
     val completed: LiveData<Boolean> = _task.map { input: Task? ->
         input?.isCompleted ?: false
     }
 
     fun deleteTask() = viewModelScope.launch {
-        _taskId.value?.let {
-            tasksRepository.deleteTask(it)
+        taskId?.let {
+            deleteTaskUseCase(it)
             _deleteTaskEvent.value = Event(Unit)
         }
     }
@@ -53,41 +61,53 @@ class TaskDetailViewModel(
     fun setCompleted(completed: Boolean) = viewModelScope.launch {
         val task = _task.value ?: return@launch
         if (completed) {
-            tasksRepository.completeTask(task)
+            completeTaskUseCase(task)
             showSnackbarMessage(R.string.task_marked_complete)
         } else {
-            tasksRepository.activateTask(task)
+            activateTaskUseCase(task)
             showSnackbarMessage(R.string.task_marked_active)
         }
     }
 
-    private fun computeResult(taskResult: Result<Task>): Task? {
-        return if (taskResult is Success) {
-            taskResult.data
-        } else {
-            showSnackbarMessage(R.string.loading_tasks_error)
-            null
-        }
-    }
-
-    fun start(taskId: String) {
+    fun start(taskId: String, forceRefresh: Boolean = false) {
         // If we're already loading or already loaded, return (might be a config change)
-        if (_dataLoading.value == true || taskId == _taskId.value) {
+        if (_isDataAvailable.value == true && !forceRefresh || _dataLoading.value == true) {
             return
         }
-        // Trigger the load
-        _taskId.value = taskId
-    }
-
-    fun refresh() {
-        // Refresh the repository and the task will be updated automatically.
-        _task.value?.let {
-            _dataLoading.value = true
+        // Show loading indicator
+        _dataLoading.value = true
+        wrapEspressoIdlingResource {
             viewModelScope.launch {
-                tasksRepository.refreshTask(it.id)
+                if (taskId != null) {
+                    getTaskUseCase(taskId, false).let { result ->
+                        if (result is Success) {
+                            onTaskLoaded(result.data)
+                        } else {
+                            onDataNotAvailable(result)
+                        }
+                    }
+                }
                 _dataLoading.value = false
             }
         }
+    }
+
+    private fun setTask(task: Task?) {
+        this._task.value = task
+        _isDataAvailable.value = task != null
+    }
+
+    private fun onTaskLoaded(task: Task) {
+        setTask(task)
+    }
+
+    private fun onDataNotAvailable(result: Result<Task>) {
+        _task.value = null
+        _isDataAvailable.value = false
+    }
+
+    fun refresh() {
+        taskId?.let { start(it, true) }
     }
 
     private fun showSnackbarMessage(@StringRes message: Int) {
