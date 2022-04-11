@@ -8,23 +8,6 @@ import com.example.todoapp.data.Task
 interface TasksDao {
 
     /**
-     * Observes list of tasks.
-     *
-     * @return all tasks.
-     */
-    @Query("SELECT * FROM Tasks")
-    fun observeTasks(): LiveData<List<Task>>
-
-    /**
-     * Observes a single task.
-     *
-     * @param taskId the task id.
-     * @return the task with taskId.
-     */
-    @Query("SELECT * FROM Tasks WHERE entry_id = :taskId")
-    fun observeTaskById(taskId: String): LiveData<Task>
-
-    /**
      * Select all tasks from the tasks table.
      *
      * @return all tasks.

@@ -16,26 +16,6 @@ class TasksLocalDataSource(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TasksDataSource {
 
-    override fun observeTasks(): LiveData<Result<List<Task>>> {
-        return tasksDao.observeTasks().map {
-            Success(it)
-        }
-    }
-
-    override fun observeTask(taskId: String): LiveData<Result<Task>> {
-        return tasksDao.observeTaskById(taskId).map {
-            Success(it)
-        }
-    }
-
-    override suspend fun refreshTask(taskId: String) {
-        //NO-OP
-    }
-
-    override suspend fun refreshTasks() {
-        //NO-OP
-    }
-
     override suspend fun getTasks(): Result<List<Task>> = withContext(ioDispatcher) {
         return@withContext try {
             Success(tasksDao.getTasks())

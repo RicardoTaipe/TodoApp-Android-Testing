@@ -1,22 +1,13 @@
 package com.example.todoapp.data.source
 
-import androidx.lifecycle.LiveData
-import com.example.todoapp.data.Task
 import com.example.todoapp.data.Result
+import com.example.todoapp.data.Task
 
 interface TasksRepository {
 
-    fun observeTasks(): LiveData<Result<List<Task>>>
-
     suspend fun getTasks(forceUpdate: Boolean = false): Result<List<Task>>
 
-    suspend fun refreshTasks()
-
-    fun observeTask(taskId: String): LiveData<Result<Task>>
-
     suspend fun getTask(taskId: String, forceUpdate: Boolean = false): Result<Task>
-
-    suspend fun refreshTask(taskId: String)
 
     suspend fun saveTask(task: Task)
 
