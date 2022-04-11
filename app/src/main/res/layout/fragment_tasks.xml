@@ -34,8 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clickable="true"
-                android:focusable="true"
-                android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}">
+                android:focusable="true">
 
                 <TextView
                     android:id="@+id/filtering_text"
@@ -50,6 +49,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -57,6 +57,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:items="@{viewmodel.items}"
+                    android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
