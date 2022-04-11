@@ -6,6 +6,7 @@ import com.example.todoapp.data.Task
 import com.example.todoapp.data.Result
 import com.example.todoapp.data.source.TasksDataSource
 
+/*
 object FakeFailingTasksRemoteDataSource : TasksDataSource {
     override suspend fun getTasks(): Result<List<Task>> {
         return Result.Error(Exception("Test"))
@@ -62,4 +63,4 @@ object FakeFailingTasksRemoteDataSource : TasksDataSource {
     override suspend fun deleteTask(taskId: String) {
         TODO("not implemented")
     }
-}
+}*/

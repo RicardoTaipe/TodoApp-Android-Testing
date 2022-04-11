@@ -1,29 +1,16 @@
 package com.example.todoapp.data.source
 
-import androidx.lifecycle.LiveData
-import com.example.todoapp.data.Task
 import com.example.todoapp.data.Result
 import com.example.todoapp.data.Result.Error
 import com.example.todoapp.data.Result.Success
+import com.example.todoapp.data.Task
 
 class FakeDataSource(var tasks: MutableList<Task>? = mutableListOf()) : TasksDataSource {
     override suspend fun getTasks(): Result<List<Task>> {
-        tasks?.let { return Success(ArrayList(it)) }
+        tasks?.let { return Success(it) }
         return Error(
             Exception("Tasks not found")
         )
-    }
-
-    override fun observeTasks(): LiveData<Result<List<Task>>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override suspend fun refreshTasks() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun observeTask(taskId: String): LiveData<Result<Task>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override suspend fun getTask(taskId: String): Result<Task> {
@@ -31,9 +18,6 @@ class FakeDataSource(var tasks: MutableList<Task>? = mutableListOf()) : TasksDat
         return Error(Exception("Task not found"))
     }
 
-    override suspend fun refreshTask(taskId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override suspend fun saveTask(task: Task) {
         tasks?.add(task)
