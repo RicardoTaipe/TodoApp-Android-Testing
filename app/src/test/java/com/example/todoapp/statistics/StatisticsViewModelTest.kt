@@ -2,10 +2,12 @@ package com.example.todoapp.statistics
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.todoapp.FakeFailingTasksRemoteDataSource
+import com.example.todoapp.LiveDataTestUtil
 import com.example.todoapp.MainCoroutineRule
 import com.example.todoapp.data.Task
 import com.example.todoapp.data.source.DefaultTasksRepository
 import com.example.todoapp.data.source.FakeTestRepository
+import com.example.todoapp.domain.GetTasksUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -17,7 +19,6 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class StatisticsViewModelTest {
-/*
     // Executes each task synchronously using Architecture Components.
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -38,15 +39,15 @@ class StatisticsViewModelTest {
         // We initialise the repository with no tasks
         tasksRepository = FakeTestRepository()
 
-        statisticsViewModel = StatisticsViewModel(tasksRepository)
+        statisticsViewModel = StatisticsViewModel(GetTasksUseCase(tasksRepository))
     }
 
     @Test
     fun loadEmptyTasksFromRepository_EmptyResults() = runTest {
         // Given an initialized StatisticsViewModel with no tasks
-
+        statisticsViewModel.start()
         // Then the results are empty
-        assertThat(statisticsViewModel.empty.getOrAwaitValue(), `is`(true))
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.empty), `is`(true))
     }
 
     @Test
@@ -56,24 +57,28 @@ class StatisticsViewModelTest {
         val task3 = Task("Title3", "Description3", true)
         val task4 = Task("Title4", "Description4", true)
         tasksRepository.addTasks(task1, task2, task3, task4)
-        assertThat(statisticsViewModel.empty.getOrAwaitValue(), `is`(false))
-        assertThat(statisticsViewModel.activeTasksPercent.getOrAwaitValue(), `is`(25f))
-        assertThat(statisticsViewModel.completedTasksPercent.getOrAwaitValue(), `is`(75f))
+        // When loading of Tasks is requested
+        statisticsViewModel.start()
+
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.empty), `is`(false))
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.activeTasksPercent), `is`(25f))
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.completedTasksPercent), `is`(75f))
     }
 
     @Test
     fun loadStatisticsWhenTasksAreUnavailable_CallErrorToDisplay() = runTest {
+        val failingRepository = DefaultTasksRepository(
+            FakeFailingTasksRemoteDataSource,
+            FakeFailingTasksRemoteDataSource,
+            Dispatchers.Main // Main is set in MainCoroutineRule
+        )
         val errorViewModel = StatisticsViewModel(
-            DefaultTasksRepository(
-                FakeFailingTasksRemoteDataSource,
-                FakeFailingTasksRemoteDataSource,
-                Dispatchers.Main // Main is set in MainCoroutineRule
-            )
+            GetTasksUseCase(failingRepository)
         )
 
         // Then an error message is shown
-        assertThat(errorViewModel.empty.getOrAwaitValue(), `is`(true))
-        assertThat(errorViewModel.error.getOrAwaitValue(), `is`(true))
+        assertThat(LiveDataTestUtil.getValue(errorViewModel.empty), `is`(true))
+        assertThat(LiveDataTestUtil.getValue(errorViewModel.error), `is`(true))
     }
 
     @Test
@@ -83,8 +88,8 @@ class StatisticsViewModelTest {
         statisticsViewModel.refresh()
 
         // Then an error message is shown
-        assertThat(statisticsViewModel.empty.getOrAwaitValue(), `is`(true))
-        assertThat(statisticsViewModel.error.getOrAwaitValue(), `is`(true))
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.empty), `is`(true))
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.error), `is`(true))
     }
 
     @Test
@@ -96,13 +101,13 @@ class StatisticsViewModelTest {
         statisticsViewModel.refresh()
 
         // Then progress indicator is shown
-        assertThat(statisticsViewModel.dataLoading.getOrAwaitValue(), `is`(true))
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.dataLoading), `is`(true))
 
         // Execute pending coroutines actions
         advanceUntilIdle()
 
         // Then progress indicator is hidden
-        assertThat(statisticsViewModel.dataLoading.getOrAwaitValue(), `is`(false))
-    }*/
+        assertThat(LiveDataTestUtil.getValue(statisticsViewModel.dataLoading), `is`(false))
+    }
 
 }
