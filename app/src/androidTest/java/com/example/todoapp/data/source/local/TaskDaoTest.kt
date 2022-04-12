@@ -36,7 +36,7 @@ class TaskDaoTest {
         database = Room.inMemoryDatabaseBuilder(
             getApplicationContext(),
             ToDoDatabase::class.java
-        ).build()
+        ).allowMainThreadQueries().build()
     }
 
     @After
@@ -78,6 +78,23 @@ class TaskDaoTest {
     }
 
     @Test
+    fun insertTaskAndGetTasks() = runTest {
+        // GIVEN - insert a task
+        val task = Task("title", "description")
+        database.taskDao().insertTask(task)
+
+        // WHEN - Get tasks from the database
+        val tasks = database.taskDao().getTasks()
+
+        // THEN - There is only 1 task in the database, and contains the expected values
+        assertThat(tasks.size, `is`(1))
+        assertThat(tasks[0].id, `is`(task.id))
+        assertThat(tasks[0].title, `is`(task.title))
+        assertThat(tasks[0].description, `is`(task.description))
+        assertThat(tasks[0].isCompleted, `is`(task.isCompleted))
+    }
+
+    @Test
     fun updateTaskAndGetById() = runTest {
         // When inserting a task
         val originalTask = Task("title", "description")
@@ -93,23 +110,6 @@ class TaskDaoTest {
         assertThat(loaded?.title, `is`("new title"))
         assertThat(loaded?.description, `is`("new description"))
         assertThat(loaded?.isCompleted, `is`(true))
-    }
-
-    @Test
-    fun insertTaskAndGetTasks() = runTest {
-        // GIVEN - insert a task
-        val task = Task("title", "description")
-        database.taskDao().insertTask(task)
-
-        // WHEN - Get tasks from the database
-        val tasks = database.taskDao().getTasks()
-
-        // THEN - There is only 1 task in the database, and contains the expected values
-        assertThat(tasks.size, `is`(1))
-        assertThat(tasks[0].id, `is`(task.id))
-        assertThat(tasks[0].title, `is`(task.title))
-        assertThat(tasks[0].description, `is`(task.description))
-        assertThat(tasks[0].isCompleted, `is`(task.isCompleted))
     }
 
     @Test

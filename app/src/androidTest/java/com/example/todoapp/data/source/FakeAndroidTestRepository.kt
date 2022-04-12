@@ -14,37 +14,6 @@ class FakeAndroidTestRepository : TasksRepository {
 
     var tasksServiceData: LinkedHashMap<String, Task> = LinkedHashMap()
 
-    private val observableTasks = MutableLiveData<Result<List<Task>>>()
-
-
-    override suspend fun refreshTasks() {
-        observableTasks.value = getTasks()
-    }
-
-    override suspend fun refreshTask(taskId: String) {
-        refreshTasks()
-    }
-
-    override fun observeTasks(): LiveData<Result<List<Task>>> {
-        runBlocking { refreshTasks() }
-        return observableTasks
-    }
-
-    override fun observeTask(taskId: String): LiveData<Result<Task>> {
-        runBlocking { refreshTasks() }
-        return observableTasks.map { tasks ->
-            when (tasks) {
-                is Result.Loading -> Result.Loading
-                is Error -> Error(tasks.exception)
-                is Success -> {
-                    val task = tasks.data.firstOrNull() { it.id == taskId }
-                        ?: return@map Error(Exception("Not found"))
-                    Success(task)
-                }
-            }
-        }
-    }
-
     override suspend fun getTask(taskId: String, forceUpdate: Boolean): Result<Task> {
         tasksServiceData[taskId]?.let {
             return Success(it)
@@ -63,7 +32,6 @@ class FakeAndroidTestRepository : TasksRepository {
     override suspend fun completeTask(task: Task) {
         val completedTask = task.copy(isCompleted = true)
         tasksServiceData[task.id] = completedTask
-        refreshTasks()
     }
 
     override suspend fun completeTask(taskId: String) {
@@ -74,7 +42,6 @@ class FakeAndroidTestRepository : TasksRepository {
     override suspend fun activateTask(task: Task) {
         val activeTask = task.copy(isCompleted = false)
         tasksServiceData[task.id] = activeTask
-        refreshTasks()
     }
 
     override suspend fun activateTask(taskId: String) {
@@ -89,12 +56,10 @@ class FakeAndroidTestRepository : TasksRepository {
 
     override suspend fun deleteTask(taskId: String) {
         tasksServiceData.remove(taskId)
-        refreshTasks()
     }
 
     override suspend fun deleteAllTasks() {
         tasksServiceData.clear()
-        refreshTasks()
     }
 
     @VisibleForTesting
@@ -102,6 +67,5 @@ class FakeAndroidTestRepository : TasksRepository {
         for (task in tasks) {
             tasksServiceData[task.id] = task
         }
-        runBlocking { refreshTasks() }
     }
 }
