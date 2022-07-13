@@ -65,6 +65,7 @@ class TasksFragment : Fragment() {
             chip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     viewModel.setFiltering(it)
+                    viewModel.loadTasks(false)
                 }
             }
             chip
