@@ -11,7 +11,7 @@ class AddEditTaskViewModelFactory(
     private val tasksRepository: TasksRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AddEditTaskViewModelFactory::class.java)) {
+        if (modelClass.isAssignableFrom(AddEditTaskViewModel::class.java)) {
             return AddEditTaskViewModel(
                 GetTaskUseCase(tasksRepository),
                 SaveTaskUseCase(tasksRepository)

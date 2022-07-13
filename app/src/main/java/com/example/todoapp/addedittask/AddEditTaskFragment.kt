@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.todoapp.EventObserver
+import com.example.todoapp.TodoApplication
 import com.example.todoapp.databinding.AddEditTaskFragmentBinding
 import com.example.todoapp.tasks.ADD_EDIT_RESULT_OK
 import com.example.todoapp.util.setupRefreshLayout
@@ -21,7 +22,9 @@ class AddEditTaskFragment : Fragment() {
 
     private val args: AddEditTaskFragmentArgs by navArgs()
 
-    private val viewModel by viewModels<AddEditTaskViewModel>()
+    private val viewModel by viewModels<AddEditTaskViewModel>{
+        AddEditTaskViewModelFactory((requireContext().applicationContext as TodoApplication).taskRepository)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

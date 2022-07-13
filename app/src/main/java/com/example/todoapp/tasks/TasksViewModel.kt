@@ -21,7 +21,7 @@ class TasksViewModel(
     private val activateTaskUseCase: ActivateTaskUseCase
 ) : ViewModel() {
 
-    private val _items = MutableLiveData<List<Task>>().apply { value = emptyList() }
+    private val _items = MutableLiveData<List<Task>>(emptyList())
     val items: LiveData<List<Task>> = _items
 
     private val _dataLoading = MutableLiveData<Boolean>()
