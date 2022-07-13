@@ -13,6 +13,7 @@ import com.example.todoapp.TodoApplication
 import com.example.todoapp.databinding.FragmentTasksBinding
 import com.example.todoapp.util.setupRefreshLayout
 import com.example.todoapp.util.setupSnackbar
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 
@@ -51,6 +52,27 @@ class TasksFragment : Fragment() {
         setupRefreshLayout(binding.refreshLayout, binding.tasksList)
         setupNavigation()
         setupFab()
+        setUPChipsSelection()
+    }
+
+    private fun setUPChipsSelection() {
+        val inflater = LayoutInflater.from(binding.filteringSelection.context)
+        val children: List<Chip> = TasksFilterType.values().map {
+            val chip: Chip =
+                inflater.inflate(R.layout.filter, binding.filteringSelection, false) as Chip
+            chip.text = it.toString()
+            chip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    viewModel.setFiltering(it)
+                }
+            }
+            chip
+        }
+        binding.filteringSelection.removeAllViews()
+
+        for (chip in children) {
+            binding.filteringSelection.addView(chip)
+        }
     }
 
     private fun setupSnackbar() {

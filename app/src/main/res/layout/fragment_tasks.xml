@@ -50,7 +50,18 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/filtering_selection" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/filtering_selection"
+                    app:singleSelection="true"
+                    app:singleLine="true"
+                    android:layout_width="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_height="wrap_content"
+                    tools:layout_height="20dp"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/tasks_list"
