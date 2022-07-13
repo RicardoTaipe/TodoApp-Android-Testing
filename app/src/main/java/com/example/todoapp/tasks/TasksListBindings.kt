@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.data.Task
+import com.example.todoapp.util.convertLongToDateString
 
 @BindingAdapter("items")
 fun setItems(recyclerView: RecyclerView, items: List<Task>?) {
@@ -20,4 +21,9 @@ fun setStyle(textView: TextView, enabled: Boolean) {
     } else {
         textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
     }
+}
+
+@BindingAdapter("formattedDate")
+fun setDate(textView: TextView, date: Long) {
+    textView.text = convertLongToDateString(date)
 }

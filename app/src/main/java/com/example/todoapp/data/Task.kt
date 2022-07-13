@@ -11,6 +11,7 @@ data class Task(
     @ColumnInfo(name = "description") var description: String = "",
     @ColumnInfo(name = "completed") var isCompleted: Boolean = false,
     @PrimaryKey @ColumnInfo(name = "entry_id") var id: String = UUID.randomUUID().toString(),
+    @ColumnInfo(name = "date") var date : Long = System.currentTimeMillis()
 ) {
     val titleForList: String
         get() = title.ifEmpty { description }
