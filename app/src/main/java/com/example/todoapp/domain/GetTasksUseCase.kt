@@ -17,10 +17,10 @@ class GetTasksUseCase(private val tasksRepository: TasksRepository) {
             val taskResult = tasksRepository.getTasks(forceUpdate)
             if (taskResult is Success && currentFiltering != ALL_TASKS) {
                 val tasks = taskResult.data
-                when (currentFiltering) {
-                    ACTIVE_TASKS -> return Success(tasks.filter { it.isActive })
-                    COMPLETED_TASKS -> return Success(tasks.filter { it.isCompleted })
-                    else -> NotImplementedError()
+                return when (currentFiltering) {
+                    ACTIVE_TASKS -> Success(tasks.filter { it.isActive })
+                    COMPLETED_TASKS -> Success(tasks.filter { it.isCompleted })
+                    else -> throw NotImplementedError()
                 }
             }
             return taskResult
