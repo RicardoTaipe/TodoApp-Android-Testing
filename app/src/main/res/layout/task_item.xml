@@ -24,7 +24,12 @@
         app:cardElevation="4dp"
         app:cardPreventCornerOverlap="true">
 
-        <LinearLayout
+        <View
+            android:layout_width="5dp"
+            android:background="?attr/colorSecondary"
+            android:layout_height="?android:attr/listPreferredItemHeight"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:onClick="@{() -> viewmodel.openTask(task.id)}"
@@ -38,19 +43,37 @@
                 android:id="@+id/complete_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:checked="@{task.completed}"
                 android:onClick="@{(view) -> viewmodel.completeTask(task, ((CompoundButton)view).isChecked())}" />
 
             <TextView
                 android:id="@+id/title_text"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/date_text"
+                app:layout_constraintStart_toEndOf="@id/complete_checkbox"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:text="@{task.titleForList}"
+                app:completedTask="@{task.completed}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                app:completedTask="@{task.completed}" />
-        </LinearLayout>
+                 />
+
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/title_text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/complete_checkbox"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                app:formattedDate="@{task.date}"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

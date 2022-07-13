@@ -41,7 +41,7 @@ object ServiceLocator {
         val result = Room.databaseBuilder(
             context.applicationContext,
             ToDoDatabase::class.java, "Tasks.db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
         database = result
         return result
     }

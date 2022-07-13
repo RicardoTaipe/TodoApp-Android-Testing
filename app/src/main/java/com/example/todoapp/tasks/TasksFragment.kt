@@ -166,3 +166,15 @@ class TasksFragment : Fragment() {
         }
     }
 }
+
+//https://medium.com/androiddevelopers/migrating-to-material-components-for-android-ec6757795351
+//https://material.io/blog/migrating-material-3
+//theming https://codelabs.developers.google.com/codelabs/mdc-101-kotlin#2
+
+//POSIBLE THEMING
+//https://dribbble.com/shots/14153121-ToDo-App-Dark-Theme
+//https://dribbble.com/shots/5540051-To-do-app-concept/attachments/10924003?mode=media
+
+//POSSIBLE FEATURES
+//https://search.muz.li/NDQxYjNhNzVh
+//https://dribbble.com/shots/4544339-To-do-App-Matt-s-Profile
