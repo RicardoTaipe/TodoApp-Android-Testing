@@ -51,6 +51,7 @@
                     android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}" />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/stats_active_indicator"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:trackThickness="10dp"
@@ -68,6 +69,7 @@
                     android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}" />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/stats_completed_indicator"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:trackThickness="10dp"
