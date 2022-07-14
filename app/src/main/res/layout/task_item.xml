@@ -60,6 +60,7 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:text="@{task.titleForList}"
                 app:completedTask="@{task.completed}"
+                android:alpha="@{task.completed ? 0.5f: 1.0f}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                  />
 
