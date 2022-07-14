@@ -1,8 +1,10 @@
 package com.example.todoapp.tasks
 
 import android.app.Activity
+import android.app.UiModeManager.MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -10,8 +12,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
+import androidx.preference.PreferenceManager
 import com.example.todoapp.R
 import com.example.todoapp.databinding.ActivityMainBinding
+import com.example.todoapp.preferences.DARK_MODE_KEY
 
 class TasksActivity : AppCompatActivity() {
 
@@ -33,6 +37,14 @@ class TasksActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         NavigationUI.setupWithNavController(binding.navView, navController)
         setupNavigationDrawer()
+        setDarkMode()
+    }
+
+    private fun setDarkMode() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        sharedPreferences.getBoolean(DARK_MODE_KEY, false).apply {
+            if (this) AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+        }
     }
 
     private fun setupNavigationDrawer() {

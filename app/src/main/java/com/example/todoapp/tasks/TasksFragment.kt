@@ -2,7 +2,6 @@ package com.example.todoapp.tasks
 
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -75,7 +74,6 @@ class TasksFragment : Fragment(), MenuProvider {
         for (chip in children) {
             binding.filteringSelection.addView(chip)
         }
-
     }
 
     private fun setupSnackbar() {
@@ -134,8 +132,8 @@ class TasksFragment : Fragment(), MenuProvider {
                 viewModel.clearCompletedTasks()
                 true
             }
-            R.id.menu_filter -> {
-                showFilteringPopUpMenu()
+            R.id.menu_dark_mode -> {
+                openSettings()
                 true
             }
             R.id.menu_refresh -> {
@@ -146,24 +144,9 @@ class TasksFragment : Fragment(), MenuProvider {
         }
     }
 
-    private fun showFilteringPopUpMenu() {
-        val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
-        PopupMenu(requireContext(), view).run {
-            menuInflater.inflate(R.menu.filter_tasks, menu)
-
-            setOnMenuItemClickListener {
-                viewModel.setFiltering(
-                    when (it.itemId) {
-                        R.id.active -> TasksFilterType.ACTIVE_TASKS
-                        R.id.completed -> TasksFilterType.COMPLETED_TASKS
-                        else -> TasksFilterType.ALL_TASKS
-                    }
-                )
-                viewModel.loadTasks(false)
-                true
-            }
-            show()
-        }
+    private fun openSettings() {
+        val action = TasksFragmentDirections.actionTasksFragmentDestToSettingsFragment()
+        findNavController().navigate(action)
     }
 }
 
