@@ -6,6 +6,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.data.Task
 import com.example.todoapp.util.convertLongToDateString
+import com.google.android.material.progressindicator.LinearProgressIndicator
 
 @BindingAdapter("items")
 fun setItems(recyclerView: RecyclerView, items: List<Task>?) {
@@ -26,4 +27,9 @@ fun setStyle(textView: TextView, enabled: Boolean) {
 @BindingAdapter("formattedDate")
 fun setDate(textView: TextView, date: Long) {
     textView.text = convertLongToDateString(date)
+}
+
+@BindingAdapter("progress")
+fun setProgress(progressIndicator: LinearProgressIndicator, progress: Float) {
+    progressIndicator.progress = progress.toInt()
 }
