@@ -51,6 +51,13 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}" />
 
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/stats_active_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:trackThickness="10dp"
+                    app:indicatorColor="?attr/colorSecondary"
+                    app:progress="@{viewmodel.activeTasksPercent}"/>
                 <!-- android:paddingTop specified to temporarily work around -->
                 <!-- https://github.com/robolectric/robolectric/issues/4588 -->
                 <TextView
@@ -62,6 +69,13 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}" />
 
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/stats_completed_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:trackThickness="10dp"
+                    app:indicatorColor="?attr/colorSecondary"
+                    app:progress="@{viewmodel.completedTasksPercent}"/>
             </LinearLayout>
         </LinearLayout>
 
