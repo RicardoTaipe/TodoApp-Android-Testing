@@ -2,6 +2,7 @@
 
     <SwitchPreferenceCompat
         app:key="dark_mode"
+        app:defaultValue="false"
         app:summary="@string/attachment_summary"
         app:title="@string/attachment_title" />
 

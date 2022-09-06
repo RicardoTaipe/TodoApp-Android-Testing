@@ -37,6 +37,7 @@ class TasksActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         NavigationUI.setupWithNavController(binding.navView, navController)
         setupNavigationDrawer()
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
         setDarkMode()
     }
 
