@@ -28,6 +28,8 @@ class DefaultTasksRepositoryTest {
     private lateinit var tasksRepository: DefaultTasksRepository
 
    /* @ExperimentalCoroutinesApi
+   // not used cause repository set up its own Dispatcher(Main)
+   //main coroutine mostly used when testing viewmodels with viewmodelscope
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()*/
 
