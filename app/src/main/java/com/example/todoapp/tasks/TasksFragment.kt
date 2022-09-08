@@ -53,7 +53,6 @@ class TasksFragment : Fragment(), MenuProvider {
         setupListAdapter()
         setupRefreshLayout(binding.refreshLayout, binding.tasksList)
         setupNavigation()
-        setupFab()
         setUPChipsSelection()
     }
 
@@ -115,12 +114,6 @@ class TasksFragment : Fragment(), MenuProvider {
                 resources.getString(R.string.add_task)
             )
         findNavController().navigate(action)
-    }
-
-    private fun setupFab() {
-        binding.addTaskFab.setOnClickListener {
-            navigateToAddNewTask()
-        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
