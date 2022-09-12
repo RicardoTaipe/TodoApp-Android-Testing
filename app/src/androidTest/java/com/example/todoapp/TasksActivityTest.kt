@@ -13,6 +13,7 @@ import androidx.test.filters.LargeTest
 import com.example.todoapp.data.Task
 import com.example.todoapp.data.source.TasksRepository
 import com.example.todoapp.tasks.TasksActivity
+import com.example.todoapp.tasks.TasksFilterType
 import com.example.todoapp.util.DataBindingIdlingResource
 import com.example.todoapp.util.EspressoIdlingResource
 import com.example.todoapp.util.monitorActivity
@@ -118,8 +119,7 @@ class TasksActivityTest {
         onView(withId(R.id.menu_delete)).perform(click())
 
         // Verify it was deleted
-        onView(withId(R.id.menu_filter)).perform(click())
-        onView(withText(R.string.nav_all)).perform(click())
+        onView(withText(TasksFilterType.ALL_TASKS.toString())).perform(click())
         onView(withText("TITLE1")).check(doesNotExist())
         // Make sure the activity is closed before resetting the db:
         activityScenario.close()
