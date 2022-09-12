@@ -7,9 +7,9 @@ enum class TasksFilterType {
 
     override fun toString(): String {
         return when (this) {
-            ALL_TASKS -> "All"
-            ACTIVE_TASKS -> "Active"
-            COMPLETED_TASKS -> "Completed"
+            ALL_TASKS -> "ALL"
+            ACTIVE_TASKS -> "ACTIVE"
+            COMPLETED_TASKS -> "COMPLETED"
         }
     }
 }
