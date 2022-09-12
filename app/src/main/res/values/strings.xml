@@ -65,15 +65,12 @@
     <!-- Sync Preferences -->
     <string name="attachment_title">Appearance</string>
     <string name="attachment_summary">Choose your light or dark theme</string>
+    <string name="priority">Priority</string>
 
     <string-array name="note_color_array">
-        <item>#E57373</item>
-        <item>#BA68C8</item>
-        <item>#64B5F6</item>
         <item>#81C784</item>
         <item>#FFF176</item>
-        <item>#FFB74D</item>
-        <item>#90A4AE</item>
+        <item>#E57373</item>
     </string-array>
 
 </resources>
