@@ -52,7 +52,6 @@ class TasksFragment : Fragment(), MenuProvider {
         setupNavigation()
         setupFab()
         setUPChipsSelection()
-        viewModel.loadTasks(true)
     }
 
     private fun setUPChipsSelection() {
