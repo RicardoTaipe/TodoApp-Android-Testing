@@ -61,8 +61,8 @@ class PriorityPicker : AppCompatSeekBar {
             attrs, R.styleable.PriorityPicker, defStyle, 0
         )
         try {
-            if (a.hasValue(R.styleable.ColorSlider_colors)) {
-                colors = a.getTextArray(R.styleable.ColorSlider_colors)
+            if (a.hasValue(R.styleable.PriorityPicker_colors)) {
+                colors = a.getTextArray(R.styleable.PriorityPicker_colors)
                     .map {
                         Color.parseColor(it.toString())
                     } as ArrayList<Int>

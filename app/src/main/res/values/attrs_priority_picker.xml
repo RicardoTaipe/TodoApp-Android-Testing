@@ -1,9 +1,5 @@
 <resources>
-    <attr name="colors" format="reference" />
     <declare-styleable name="PriorityPicker">
-        <attr name="colors" />
-    </declare-styleable>
-    <declare-styleable name="ColorSlider">
-        <attr name="colors" />
+        <attr name="colors" format="reference" />
     </declare-styleable>
 </resources>
