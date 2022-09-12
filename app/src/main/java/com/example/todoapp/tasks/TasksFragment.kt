@@ -1,10 +1,7 @@
 package com.example.todoapp.tasks
 
-import android.app.UiModeManager.MODE_NIGHT_NO
-import android.app.UiModeManager.MODE_NIGHT_YES
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
