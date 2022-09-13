@@ -1,9 +1,12 @@
 package com.example.todoapp.tasks
 
+import android.graphics.Color
 import android.graphics.Paint
+import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.todoapp.R
 import com.example.todoapp.data.Task
 import com.example.todoapp.util.convertLongToDateString
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -32,4 +35,11 @@ fun setDate(textView: TextView, date: Long) {
 @BindingAdapter("progress")
 fun setProgress(progressIndicator: LinearProgressIndicator, progress: Float) {
     progressIndicator.progress = progress.toInt()
+}
+
+@BindingAdapter("priorityColor")
+fun setPriorityColor(view: View, priority: Int) {
+    val context = view.context
+    val colors = context.resources.getStringArray(R.array.note_color_array)
+    view.setBackgroundColor(Color.parseColor(colors[priority]))
 }
