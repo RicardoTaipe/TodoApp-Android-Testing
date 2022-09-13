@@ -5,15 +5,13 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
-import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.content.ContextCompat
 import com.example.todoapp.R
-import com.google.android.material.slider.Slider
+import com.example.todoapp.tasks.TaskPriority
 
 
 class PriorityPicker : AppCompatSeekBar {
@@ -23,7 +21,11 @@ class PriorityPicker : AppCompatSeekBar {
     private val h = getPixelValueFromDP(16f) // Height of color swatch
     private val halfW = if (w >= 0) w / 2f else 1f
     private val halfH = if (h >= 0) h / 2f else 1f
-    private val paint = Paint()
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.CENTER
+        textSize = getPixelValueFromDP(12f)
+    }
+
     private var noColorDrawable: Drawable? = null
         set(value) {
             w2 = value?.intrinsicWidth ?: 0
@@ -85,7 +87,7 @@ class PriorityPicker : AppCompatSeekBar {
             paddingLeft,
             paddingTop,
             paddingRight,
-            paddingBottom + getPixelValueFromDP(16f).toInt()
+            paddingBottom + getPixelValueFromDP(32f).toInt()
         )
         thumb = context.getDrawable(R.drawable.ic_color_slider_thumb)
         noColorDrawable = context.getDrawable(R.drawable.ic_no_color)
@@ -138,6 +140,7 @@ class PriorityPicker : AppCompatSeekBar {
             if (count > 1) {
                 val spacing = (width - paddingLeft - paddingRight) / (count - 1).toFloat()
                 for (i in 0 until count) {
+                    val label = resources.getString(TaskPriority.values()[i].label)
                     if (i == 0) {
                         noColorDrawable?.draw(canvas)
                     } else {
@@ -147,6 +150,8 @@ class PriorityPicker : AppCompatSeekBar {
                             halfW, halfH, paint
                         )
                     }
+                    paint.color = Color.BLACK
+                    canvas.drawText(label, 0f, (1.5 * h).toFloat(), paint)
                     canvas.translate(spacing, 0f)
                 }
                 canvas.restoreToCount(saveCount)
