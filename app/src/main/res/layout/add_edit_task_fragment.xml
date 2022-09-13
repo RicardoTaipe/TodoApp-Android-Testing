@@ -46,6 +46,7 @@
                         android:hint="@string/title_hint"
                         android:imeOptions="flagNoExtractUi"
                         android:maxLines="1"
+                        android:minHeight="48dp"
                         android:text="@={viewmodel.title}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
                         android:textStyle="bold" />
@@ -60,6 +61,19 @@
                         android:imeOptions="flagNoExtractUi"
                         android:text="@={viewmodel.description}" />
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/priority"
+                        android:textColor="?attr/colorPrimaryDark" />
+
+                    <com.example.todoapp.customviews.PriorityPicker
+                        android:id="@+id/add_task_priority_picker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onChangeListener="@{(progress)-> viewmodel.setPriority(progress)}"
+                        android:progress="@{viewmodel.priority}"
+                        app:colors="@array/note_color_array" />
                 </LinearLayout>
             </ScrollView>
         </com.example.todoapp.ScrollChildSwipeRefreshLayout>
