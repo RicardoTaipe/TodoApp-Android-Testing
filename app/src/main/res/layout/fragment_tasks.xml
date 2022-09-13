@@ -55,6 +55,7 @@
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/filtering_selection"
                     app:singleSelection="true"
+                    app:selectionRequired="true"
                     app:singleLine="true"
                     android:layout_width="0dp"
                     app:layout_constraintStart_toStartOf="parent"
