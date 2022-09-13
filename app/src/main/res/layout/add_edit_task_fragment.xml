@@ -64,14 +64,16 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="?attr/colorPrimaryDark"
-                        android:text="@string/priority"/>
+                        android:text="@string/priority"
+                        android:textColor="?attr/colorPrimaryDark" />
 
                     <com.example.todoapp.customviews.PriorityPicker
                         android:id="@+id/add_task_priority_picker"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:colors="@array/note_color_array"/>
+                        android:onChangeListener="@{(progress)-> viewmodel.setPriority(progress)}"
+                        android:progress="@{viewmodel.priority}"
+                        app:colors="@array/note_color_array" />
                 </LinearLayout>
             </ScrollView>
         </com.example.todoapp.ScrollChildSwipeRefreshLayout>
