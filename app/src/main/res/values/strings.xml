@@ -72,6 +72,7 @@
     <string name="high">HIGH</string>
 
     <string-array name="note_color_array">
+        <item>#A0ACA0</item>
         <item>#81C784</item>
         <item>#FFF176</item>
         <item>#E57373</item>
