@@ -72,7 +72,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:colors="@array/note_color_array"/>
-
                 </LinearLayout>
             </ScrollView>
         </com.example.todoapp.ScrollChildSwipeRefreshLayout>
