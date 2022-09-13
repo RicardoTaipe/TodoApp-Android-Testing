@@ -16,11 +16,19 @@ import com.example.todoapp.tasks.TaskPriority
 
 class PriorityPicker : AppCompatSeekBar {
 
-    private var colors: ArrayList<Int> = arrayListOf(Color.RED, Color.YELLOW, Color.GREEN)
+    private var colors: ArrayList<Int> =
+        arrayListOf(Color.DKGRAY, Color.RED, Color.YELLOW, Color.GREEN)
+
     private val w = getPixelValueFromDP(16f) // Width of color swatch
     private val h = getPixelValueFromDP(16f) // Height of color swatch
     private val halfW = if (w >= 0) w / 2f else 1f
     private val halfH = if (h >= 0) h / 2f else 1f
+
+    var w2 = 0
+    private var h2 = 0
+    private var halfW2 = 1
+    private var halfH2 = 1
+
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         textSize = getPixelValueFromDP(12f)
@@ -35,10 +43,13 @@ class PriorityPicker : AppCompatSeekBar {
             value?.setBounds(-halfW2, -halfH2, halfW2, halfH2)
             field = value
         }
-    var w2 = 0
-    private var h2 = 0
-    private var halfW2 = 1
-    private var halfH2 = 1
+
+
+    var onChangeListener: PickListener? = null
+
+    interface PickListener {
+        fun onChangeListener(progress: Int)
+    }
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -58,7 +69,6 @@ class PriorityPicker : AppCompatSeekBar {
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
         // Load attributes
-
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.PriorityPicker, defStyle, 0
         )
@@ -72,7 +82,6 @@ class PriorityPicker : AppCompatSeekBar {
         } finally {
             a.recycle()
         }
-        colors.add(0, android.R.color.transparent)
         max = colors.size - 1
         progressBackgroundTintList = ContextCompat.getColorStateList(
             context,
@@ -90,39 +99,21 @@ class PriorityPicker : AppCompatSeekBar {
             paddingBottom + getPixelValueFromDP(32f).toInt()
         )
         thumb = context.getDrawable(R.drawable.ic_color_slider_thumb)
+
         noColorDrawable = context.getDrawable(R.drawable.ic_no_color)
+        noColorDrawable?.setTint(colors[0])
         noColorDrawable?.callback = this
 
         setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                listeners.forEach {
-                    it(colors[progress])
-                }
+                onChangeListener?.onChangeListener(progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
     }
-
-    var selectedColorValue: Int = android.R.color.transparent
-        set(value) {
-            val index = colors.indexOf(value)
-            progress = if (index == -1) {
-                0
-            } else {
-                index
-            }
-        }
-
-    private var listeners: ArrayList<(Int) -> Unit> = arrayListOf()
-
-    fun addListener(function: (Int) -> Unit) {
-        listeners.add(function)
-    }
-
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -145,10 +136,7 @@ class PriorityPicker : AppCompatSeekBar {
                         noColorDrawable?.draw(canvas)
                     } else {
                         paint.color = colors[i]
-                        canvas.drawRect(
-                            -halfW, -halfH,
-                            halfW, halfH, paint
-                        )
+                        canvas.drawRect(-halfW, -halfH, halfW, halfH, paint)
                     }
                     paint.color = Color.BLACK
                     canvas.drawText(label, 0f, (1.5 * h).toFloat(), paint)
