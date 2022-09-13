@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 
 object TasksRemoteDataSource : TasksDataSource {
 
-    private const val SERVICE_LATENCY_IN_MILLIS = 2000L
+    private const val SERVICE_LATENCY_IN_MILLIS = 800L
 
     private var TASKS_SERVICE_DATA = LinkedHashMap<String, Task>(2)
 
