@@ -10,6 +10,7 @@ import com.example.todoapp.R
 import com.example.todoapp.TodoApplication
 import com.example.todoapp.data.Result
 import com.example.todoapp.data.Task
+import com.example.todoapp.tasks.TaskPriority
 import kotlinx.coroutines.launch
 
 class AddEditTaskViewModel(application: Application) : AndroidViewModel(application) {
@@ -20,6 +21,8 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
 
     // Two-way databinding, exposing MutableLiveData
     val description = MutableLiveData<String>()
+
+    val priority = MutableLiveData(TaskPriority.NONE.ordinal)
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -71,6 +74,7 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
     private fun onTaskLoaded(task: Task) {
         title.value = task.title
         description.value = task.description
+        priority.value = task.priority
         taskCompleted = task.isCompleted
         _dataLoading.value = false
         isDataLoaded = true
@@ -84,7 +88,7 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
     fun saveTask() {
         val currentTitle = title.value
         val currentDescription = description.value
-
+        val currentPriority = priority.value
         if (currentTitle == null || currentDescription == null) {
             _snackbarText.value = Event(R.string.empty_task_message)
             return
@@ -94,13 +98,27 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
             return
         }
 
+        if (currentPriority == null) {
+            return
+        }
+
         val currentTaskId = taskId
         if (isNewTask || currentTaskId == null) {
-            createTask(Task(currentTitle, currentDescription))
+            createTask(Task(currentTitle, currentDescription, priority = currentPriority))
         } else {
-            val task = Task(currentTitle, currentDescription, taskCompleted, currentTaskId)
+            val task = Task(
+                currentTitle,
+                currentDescription,
+                taskCompleted,
+                currentTaskId,
+                priority = currentPriority
+            )
             updateTask(task)
         }
+    }
+
+    fun setPriority(progress: Int) {
+        priority.value = progress
     }
 
     private fun createTask(newTask: Task) = viewModelScope.launch {
