@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.content.ContextCompat
 import com.example.todoapp.R
 import com.example.todoapp.tasks.TaskPriority
+import com.google.android.material.color.MaterialColors
 
 
 class PriorityPicker : AppCompatSeekBar {
@@ -138,7 +139,7 @@ class PriorityPicker : AppCompatSeekBar {
                         paint.color = colors[i]
                         canvas.drawRect(-halfW, -halfH, halfW, halfH, paint)
                     }
-                    paint.color = Color.BLACK
+                    paint.color = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
                     canvas.drawText(label, 0f, (1.5 * h).toFloat(), paint)
                     canvas.translate(spacing, 0f)
                 }
