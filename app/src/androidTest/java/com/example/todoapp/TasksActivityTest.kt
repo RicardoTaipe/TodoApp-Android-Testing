@@ -12,14 +12,18 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.example.todoapp.data.Task
 import com.example.todoapp.data.source.TasksRepository
+import com.example.todoapp.tasks.TaskPriority
 import com.example.todoapp.tasks.TasksActivity
 import com.example.todoapp.tasks.TasksFilterType
 import com.example.todoapp.util.DataBindingIdlingResource
 import com.example.todoapp.util.EspressoIdlingResource
+import com.example.todoapp.util.PickerTestUtil.setProgress
+import com.example.todoapp.util.PickerTestUtil.withColorPriority
 import com.example.todoapp.util.monitorActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.core.IsNot.not
 import org.junit.After
 import org.junit.Before
@@ -71,32 +75,45 @@ class TasksActivityTest {
     }
 
     @Test
-    fun editTask() = runTest {
-        repository.saveTask(Task("TITLE1", "DESCRIPTION"))
+    fun editTask() {
+        val task = Task("TITLE1", "DESCRIPTION")
+        runTest {
+            repository.saveTask(task)
 
-        // Start up Tasks screen
-        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
+            // Start up Tasks screen
+            val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+            dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        // Click on the task on the list and verify that all the data is correct
-        onView(withText("TITLE1")).perform(click())
-        onView(withId(R.id.task_detail_title_text)).check(matches(withText("TITLE1")))
-        onView(withId(R.id.task_detail_description_text)).check(matches(withText("DESCRIPTION")))
-        onView(withId(R.id.task_detail_complete_checkbox)).check(matches(not(isChecked())))
+            // Click on the task on the list and verify that all the data is correct
+            onView(withText("TITLE1")).perform(click())
+            onView(withId(R.id.task_detail_title_text)).check(matches(withText("TITLE1")))
+            onView(withId(R.id.task_detail_description_text)).check(matches(withText("DESCRIPTION")))
+            onView(withId(R.id.task_detail_complete_checkbox)).check(matches(not(isChecked())))
 
-        // Click on the edit button, edit, and save
-        onView(withId(R.id.edit_task_fab)).perform(click())
-        onView(withId(R.id.add_task_title_edit_text)).perform(replaceText("NEW TITLE"))
-        onView(withId(R.id.add_task_description_edit_text)).perform(replaceText("NEW DESCRIPTION"))
-        onView(withId(R.id.save_task_fab)).perform(click())
+            // Click on the edit button, edit, and save
+            onView(withId(R.id.edit_task_fab)).perform(click())
+            onView(withId(R.id.add_task_title_edit_text)).perform(replaceText("NEW TITLE"))
+            onView(withId(R.id.add_task_description_edit_text)).perform(replaceText("NEW DESCRIPTION"))
+            onView(withId(R.id.add_task_priority_picker)).perform(setProgress(TaskPriority.MEDIUM.ordinal))
 
-        // Verify task is displayed on screen in the task list.
-        onView(withText("NEW TITLE")).check(matches(isDisplayed()))
-        // Verify previous task is not displayed
-        onView(withText("TITLE1")).check(doesNotExist())
+            onView(withId(R.id.save_task_fab)).perform(click())
 
-        // Make sure the activity is closed before resetting the db:
-        activityScenario.close()
+            // Verify task is displayed on screen in the task list.
+            onView(withText("NEW TITLE")).check(matches(isDisplayed()))
+            // Verify previous task is not displayed
+            onView(withText("TITLE1")).check(doesNotExist())
+            //Verify priority color
+            onView(withTagValue(`is`(task.id))).check(
+                matches(
+                    withColorPriority(
+                        R.array.note_color_array,
+                        TaskPriority.MEDIUM.ordinal
+                    )
+                )
+            )
+            // Make sure the activity is closed before resetting the db:
+            activityScenario.close()
+        }
     }
 
     @Test
