@@ -19,11 +19,13 @@ import com.example.todoapp.util.DataBindingIdlingResource
 import com.example.todoapp.util.EspressoIdlingResource
 import com.example.todoapp.util.PickerTestUtil.setProgress
 import com.example.todoapp.util.PickerTestUtil.withColorPriority
+import com.example.todoapp.util.getToolbarNavigationContentDescription
 import com.example.todoapp.util.monitorActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.core.IsNot.not
 import org.junit.After
 import org.junit.Before
@@ -75,45 +77,45 @@ class TasksActivityTest {
     }
 
     @Test
-    fun editTask() {
+    fun editTask() = runTest {
         val task = Task("TITLE1", "DESCRIPTION")
-        runTest {
-            repository.saveTask(task)
 
-            // Start up Tasks screen
-            val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
-            dataBindingIdlingResource.monitorActivity(activityScenario)
+        repository.saveTask(task)
 
-            // Click on the task on the list and verify that all the data is correct
-            onView(withText("TITLE1")).perform(click())
-            onView(withId(R.id.task_detail_title_text)).check(matches(withText("TITLE1")))
-            onView(withId(R.id.task_detail_description_text)).check(matches(withText("DESCRIPTION")))
-            onView(withId(R.id.task_detail_complete_checkbox)).check(matches(not(isChecked())))
+        // Start up Tasks screen
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
 
-            // Click on the edit button, edit, and save
-            onView(withId(R.id.edit_task_fab)).perform(click())
-            onView(withId(R.id.add_task_title_edit_text)).perform(replaceText("NEW TITLE"))
-            onView(withId(R.id.add_task_description_edit_text)).perform(replaceText("NEW DESCRIPTION"))
-            onView(withId(R.id.add_task_priority_picker)).perform(setProgress(TaskPriority.MEDIUM.ordinal))
+        // Click on the task on the list and verify that all the data is correct
+        onView(withText("TITLE1")).perform(click())
+        //Navigate to detail fragment and test
+        onView(withId(R.id.task_detail_title_text)).check(matches(withText("TITLE1")))
+        onView(withId(R.id.task_detail_description_text)).check(matches(withText("DESCRIPTION")))
+        onView(withId(R.id.task_detail_complete_checkbox)).check(matches(not(isChecked())))
 
-            onView(withId(R.id.save_task_fab)).perform(click())
+        // Click on the edit button, edit, and save
+        onView(withId(R.id.edit_task_fab)).perform(click())
+        onView(withId(R.id.add_task_title_edit_text)).perform(replaceText("NEW TITLE"))
+        onView(withId(R.id.add_task_description_edit_text)).perform(replaceText("NEW DESCRIPTION"))
+        onView(withId(R.id.add_task_priority_picker)).perform(setProgress(TaskPriority.MEDIUM.ordinal))
 
-            // Verify task is displayed on screen in the task list.
-            onView(withText("NEW TITLE")).check(matches(isDisplayed()))
-            // Verify previous task is not displayed
-            onView(withText("TITLE1")).check(doesNotExist())
-            //Verify priority color
-            onView(withTagValue(`is`(task.id))).check(
-                matches(
-                    withColorPriority(
-                        R.array.note_color_array,
-                        TaskPriority.MEDIUM.ordinal
-                    )
+        onView(withId(R.id.save_task_fab)).perform(click())
+
+        // Verify task is displayed on screen in the task list.
+        onView(withText("NEW TITLE")).check(matches(isDisplayed()))
+        // Verify previous task is not displayed
+        onView(withText("TITLE1")).check(doesNotExist())
+        //Verify priority color
+        onView(withTagValue(`is`(task.id))).check(
+            matches(
+                withColorPriority(
+                    R.array.note_color_array,
+                    TaskPriority.MEDIUM.ordinal
                 )
             )
-            // Make sure the activity is closed before resetting the db:
-            activityScenario.close()
-        }
+        )
+        // Make sure the activity is closed before resetting the db:
+        activityScenario.close()
     }
 
     @Test
@@ -140,5 +142,192 @@ class TasksActivityTest {
         onView(withText("TITLE1")).check(doesNotExist())
         // Make sure the activity is closed before resetting the db:
         activityScenario.close()
+    }
+
+    @Test
+    fun createTwoTasks_deleteOneTask() = runTest {
+        repository.saveTask(Task("TITLE1", "DESCRIPTION"))
+        repository.saveTask(Task("TITLE2", "DESCRIPTION"))
+
+        // start up Tasks screen
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Open the second task in details view
+        onView(withText("TITLE2")).perform(click())
+        // Click delete task in menu
+        onView(withId(R.id.menu_delete)).perform(click())
+
+        // Verify only one task was deleted
+        //onView(withId(R.id.menu_filter)).perform(click())
+        onView(withText(TasksFilterType.ALL_TASKS.toString())).perform(click())
+        onView(withText("TITLE1")).check(matches(isDisplayed()))
+        onView(withText("TITLE2")).check(doesNotExist())
+        // Make sure the activity is closed before resetting the db:
+        activityScenario.close()
+    }
+
+    @Test
+    fun markTaskAsCompleteOnDetailScreen_taskIsCompleteInList() = runTest {
+        // Add 1 active task
+        val taskTitle = "COMPLETED ONE"
+        repository.saveTask(Task(taskTitle, "DESCRIPTION"))
+
+        // start up Tasks screen
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the task on the list
+        onView(withText(taskTitle)).perform(click())
+
+        // Click on the checkbox in task details screen
+        onView(withId(R.id.task_detail_complete_checkbox)).perform(click())
+
+        // Click on the navigation up button to go back to the list
+        onView(
+            withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()
+            )
+        ).perform(click())
+
+        // Check that the task is marked as completed
+        onView(allOf(withId(R.id.complete_checkbox), hasSibling(withText(taskTitle))))
+            .check(matches(isChecked()))
+        // Make sure the activity is closed before resetting the db:
+        activityScenario.close()
+
+    }
+
+    @Test
+    fun markTaskAsActiveOnDetailScreen_taskIsActiveInList() = runTest {
+        // Add 1 completed task
+        val taskTitle = "ACTIVE ONE"
+        repository.saveTask(Task(taskTitle, "DESCRIPTION", true))
+
+        // start up Tasks screen
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the task on the list
+        onView(withText(taskTitle)).perform(click())
+        // Click on the checkbox in task details screen
+        onView(withId(R.id.task_detail_complete_checkbox)).perform(click())
+
+        // Click on the navigation up button to go back to the list
+        onView(
+            withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()
+            )
+        ).perform(click())
+
+        // Check that the task is marked as active
+        onView(allOf(withId(R.id.complete_checkbox), hasSibling(withText(taskTitle))))
+            .check(matches(not(isChecked())))
+        // Make sure the activity is closed before resetting the db:
+        activityScenario.close()
+    }
+
+    @Test
+    fun markTaskAsCompleteAndActiveOnDetailScreen_taskIsActiveInList() = runTest {
+        // Add 1 active task
+        val taskTitle = "ACT-COMP"
+        repository.saveTask(Task(taskTitle, "DESCRIPTION"))
+
+        // start up Tasks screen
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the task on the list
+        onView(withText(taskTitle)).perform(click())
+        // Click on the checkbox in task details screen
+        onView(withId(R.id.task_detail_complete_checkbox)).perform(click())
+        // Click again to restore it to original state
+        onView(withId(R.id.task_detail_complete_checkbox)).perform(click())
+
+        // Click on the navigation up button to go back to the list
+        onView(
+            withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()
+            )
+        ).perform(click())
+
+        // Check that the task is marked as active
+        onView(allOf(withId(R.id.complete_checkbox), hasSibling(withText(taskTitle))))
+            .check(matches(not(isChecked())))
+        // Make sure the activity is closed before resetting the db:
+        activityScenario.close()
+    }
+
+
+    @Test
+    fun markTaskAsActiveAndCompleteOnDetailScreen_taskIsCompleteInList() = runTest {
+        // Add 1 completed task
+        val taskTitle = "COMP-ACT"
+        repository.saveTask(Task(taskTitle, "DESCRIPTION", true))
+
+        // start up Tasks screen
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        // Click on the task on the list
+        onView(withText(taskTitle)).perform(click())
+        // Click on the checkbox in task details screen
+        onView(withId(R.id.task_detail_complete_checkbox)).perform(click())
+        // Click again to restore it to original state
+        onView(withId(R.id.task_detail_complete_checkbox)).perform(click())
+
+        // Click on the navigation up button to go back to the list
+        onView(
+            withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()
+            )
+        ).perform(click())
+
+        // Check that the task is marked as active
+        onView(allOf(withId(R.id.complete_checkbox), hasSibling(withText(taskTitle))))
+            .check(matches(isChecked()))
+        // Make sure the activity is closed before resetting the db:
+        activityScenario.close()
+    }
+
+    @Test
+    fun createTask() {
+        // start up Tasks screen
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        val titleTask = "title"
+        // Click on the "+" button, add details, and save
+        onView(withId(R.id.add_task_fab)).perform(click())
+        onView(withId(R.id.add_task_title_edit_text)).perform(
+            typeText(titleTask),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.add_task_description_edit_text)).perform(typeText("description"))
+        onView(withId(R.id.add_task_priority_picker)).perform(setProgress(TaskPriority.MEDIUM.ordinal))
+        // SAVE
+        onView(withId(R.id.save_task_fab)).perform(click())
+        // Then verify task is displayed on screen
+        onView(withText(titleTask)).check(matches(isDisplayed()))
+        //Verify priority color
+        onView(
+            allOf(
+                withId(R.id.priority_color), hasSibling(
+                    allOf(
+                        withId(R.id.task_container),
+                        hasDescendant(withText(titleTask))
+                    )
+                )
+            )
+        ).check(
+            matches(
+                withColorPriority(
+                    R.array.note_color_array,
+                    TaskPriority.MEDIUM.ordinal
+                )
+            )
+        )
+        // Make sure the activity is closed before resetting the db:
+        activityScenario.close()
+
     }
 }
