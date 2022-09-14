@@ -1,8 +1,7 @@
 package com.example.todoapp
 
-import android.app.Activity
 import android.view.Gravity
-import androidx.appcompat.widget.Toolbar
+import androidx.navigation.findNavController
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
@@ -10,8 +9,10 @@ import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.DrawerActions.open
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.contrib.DrawerMatchers.isOpen
+import androidx.test.espresso.contrib.NavigationViewActions.navigateTo
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -20,9 +21,9 @@ import com.example.todoapp.data.source.TasksRepository
 import com.example.todoapp.tasks.TasksActivity
 import com.example.todoapp.util.DataBindingIdlingResource
 import com.example.todoapp.util.EspressoIdlingResource
+import com.example.todoapp.util.getToolbarNavigationContentDescription
 import com.example.todoapp.util.monitorActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -65,6 +66,36 @@ class AppNavigationTest {
     fun unregisterIdlingResource() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+    }
+
+    @Test
+    fun drawerNavigationFromTasksToStatistics() {
+        val activityScenario = ActivityScenario.launch(TasksActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.drawer_layout))
+            .check(matches(isClosed(Gravity.START))) // Left Drawer should be closed.
+            .perform(open()) // Open Drawer
+
+        // Start statistics screen.
+        onView(withId(R.id.nav_view))
+            .perform(navigateTo(R.id.statistics_fragment_dest))
+
+        // Check that statistics screen was opened.
+        onView(withId(R.id.statistics_layout)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.drawer_layout))
+            .check(matches(isClosed(Gravity.START))) // Left Drawer should be closed.
+            .perform(open()) // Open Drawer
+
+        // Start tasks screen.
+        onView(withId(R.id.nav_view))
+            .perform(navigateTo(R.id.tasks_fragment_dest))
+
+        // Check that tasks screen was opened.
+        onView(withId(R.id.tasks_container_layout)).check(matches(isDisplayed()))
+        // When using ActivityScenario.launch, always call close()
+        activityScenario.close()
     }
 
     @Test
@@ -157,14 +188,4 @@ class AppNavigationTest {
     }
 
 
-}
-
-fun <T : Activity> ActivityScenario<T>.getToolbarNavigationContentDescription()
-        : String {
-    var description = ""
-    onActivity {
-        description =
-            it.findViewById<Toolbar>(R.id.toolbar).navigationContentDescription as String
-    }
-    return description
 }
