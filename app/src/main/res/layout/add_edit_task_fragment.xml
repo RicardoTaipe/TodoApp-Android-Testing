@@ -65,7 +65,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/priority"
-                        android:textColor="?attr/colorPrimaryDark" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                     <com.example.todoapp.customviews.PriorityPicker
                         android:id="@+id/add_task_priority_picker"
