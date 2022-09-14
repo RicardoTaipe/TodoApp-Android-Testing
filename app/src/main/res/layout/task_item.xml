@@ -26,13 +26,15 @@
         app:cardPreventCornerOverlap="true">
 
         <View
+            android:id="@+id/priority_color"
             android:layout_width="5dp"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:tag="@{task.id}"
-            tools:background="?attr/colorSecondary"
             app:priorityColor="@{task.priority}"
-            android:layout_height="?android:attr/listPreferredItemHeight"/>
+            tools:background="?attr/colorSecondary" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/task_container"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:onClick="@{() -> viewmodel.openTask(task.id)}"
