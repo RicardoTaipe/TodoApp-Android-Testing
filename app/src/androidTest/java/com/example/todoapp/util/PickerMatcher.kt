@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.SeekBar
 import androidx.annotation.ArrayRes
 import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.core.content.ContextCompat
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.BoundedMatcher
