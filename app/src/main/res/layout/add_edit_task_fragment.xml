@@ -74,6 +74,25 @@
                         android:onChangeListener="@{(progress)-> viewmodel.setPriority(progress)}"
                         android:progress="@{viewmodel.priority}"
                         app:colors="@array/note_color_array" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/activity_horizontal_margin"
+                        android:text="Set Reminder"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                    <Button
+                        android:id="@+id/reminder_button"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textStart"
+                        android:hint="00:00, 25 Aug"
+                        android:textAllCaps="false"
+                        android:textColor="?attr/colorOnSurface"
+                        app:icon="@drawable/ic_reminder"
+                        app:iconTint="?attr/colorOnSurface" />
                 </LinearLayout>
             </ScrollView>
         </com.example.todoapp.ScrollChildSwipeRefreshLayout>

@@ -20,7 +20,7 @@ object FakeFailingTasksRemoteDataSource : TasksDataSource {
     }
 
     override suspend fun refreshTasks() {
-        TODO("not implemented")
+
     }
 
     override fun observeTask(taskId: String): LiveData<Result<Task>> {
@@ -28,38 +28,38 @@ object FakeFailingTasksRemoteDataSource : TasksDataSource {
     }
 
     override suspend fun refreshTask(taskId: String) {
-        TODO("not implemented")
+
     }
 
     override suspend fun saveTask(task: Task) {
-        TODO("not implemented")
+
     }
 
     override suspend fun completeTask(task: Task) {
-        TODO("not implemented")
+
     }
 
     override suspend fun completeTask(taskId: String) {
-        TODO("not implemented")
+
     }
 
     override suspend fun activateTask(task: Task) {
-        TODO("not implemented")
+
     }
 
     override suspend fun activateTask(taskId: String) {
-        TODO("not implemented")
+
     }
 
     override suspend fun clearCompletedTasks() {
-        TODO("not implemented")
+
     }
 
     override suspend fun deleteAllTasks() {
-        TODO("not implemented")
+
     }
 
     override suspend fun deleteTask(taskId: String) {
-        TODO("not implemented")
+
     }
 }

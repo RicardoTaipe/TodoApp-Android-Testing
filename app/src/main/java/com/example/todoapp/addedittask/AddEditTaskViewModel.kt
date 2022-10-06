@@ -1,6 +1,17 @@
 package com.example.todoapp.addedittask
 
+import android.app.AlarmManager
 import android.app.Application
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.CountDownTimer
+import android.os.SystemClock
+import androidx.core.app.AlarmManagerCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,10 +21,26 @@ import com.example.todoapp.R
 import com.example.todoapp.TodoApplication
 import com.example.todoapp.data.Result
 import com.example.todoapp.data.Task
+import com.example.todoapp.receiver.AlarmReceiver
 import com.example.todoapp.tasks.TaskPriority
+import com.example.todoapp.util.cancelNotifications
+import com.example.todoapp.util.sendNotification
 import kotlinx.coroutines.launch
+import java.util.*
 
 class AddEditTaskViewModel(application: Application) : AndroidViewModel(application) {
+    //region timer related
+    private val REQUEST_CODE = 0
+    private val TRIGGER_TIME = "TRIGGER_AT"
+    var minute: Int? = null
+    var hour: Int? = null
+    private val second: Long = 1_000L
+    private var notifyPendingIntent: PendingIntent
+    private val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val notifyIntent = Intent(application, AlarmReceiver::class.java)
+
+    //endregion
+
     private val tasksRepository = (application as TodoApplication).taskRepository
 
     // Two-way databinding, exposing MutableLiveData
@@ -40,6 +67,36 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
     private var isDataLoaded = false
 
     private var taskCompleted = false
+
+    init {
+        notifyPendingIntent = PendingIntent.getBroadcast(
+            getApplication(),
+            REQUEST_CODE,
+            notifyIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
+    private fun saveTime() {
+        with(NotificationManagerCompat.from(getApplication())) {
+            cancelNotifications()
+        }
+        if (hour == null || minute == null) return
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, hour!!)
+            set(Calendar.MINUTE, minute!!)
+            set(Calendar.SECOND, 0)
+        }
+
+        AlarmManagerCompat.setExactAndAllowWhileIdle(
+            alarmManager,
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            notifyPendingIntent
+        )
+    }
+
 
     fun start(taskId: String?) {
         if (_dataLoading.value == true) {
@@ -105,6 +162,7 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
         val currentTaskId = taskId
         if (isNewTask || currentTaskId == null) {
             createTask(Task(currentTitle, currentDescription, priority = currentPriority))
+            saveTime()
         } else {
             val task = Task(
                 currentTitle,
