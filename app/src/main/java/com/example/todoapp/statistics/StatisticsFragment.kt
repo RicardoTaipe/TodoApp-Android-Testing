@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import com.example.todoapp.TodoApplication
 import com.example.todoapp.databinding.StatisticsFragmentBinding
 import com.example.todoapp.util.setupRefreshLayout
+import com.google.android.material.progressindicator.LinearProgressIndicator
 
+private const val INITIAL_VALUE = 0
 private const val DURATION = 800L
 private const val PROGRESS_PROPERTY = "progress"
 
@@ -25,8 +27,7 @@ class StatisticsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = StatisticsFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -41,18 +42,17 @@ class StatisticsFragment : Fragment() {
 
     private fun animateBars() {
         viewModel.activeTasksPercent.observe(viewLifecycleOwner) {
-            ObjectAnimator.ofInt(binding.statsActiveIndicator, PROGRESS_PROPERTY, 0, it.toInt())
-                .apply {
-                    duration = DURATION
-                    start()
-                }
+            animateProgress(binding.statsActiveIndicator, it)
         }
         viewModel.completedTasksPercent.observe(viewLifecycleOwner) {
-            ObjectAnimator.ofInt(binding.statsCompletedIndicator, PROGRESS_PROPERTY, 0, it.toInt())
-                .apply {
-                    duration = DURATION
-                    start()
-                }
+            animateProgress(binding.statsCompletedIndicator, it)
+        }
+    }
+
+    private fun animateProgress(view: LinearProgressIndicator, finalValue: Float) {
+        ObjectAnimator.ofInt(view, PROGRESS_PROPERTY, INITIAL_VALUE, finalValue.toInt()).apply {
+            duration = DURATION
+            start()
         }
     }
 }
