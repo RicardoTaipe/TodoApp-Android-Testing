@@ -159,7 +159,6 @@ class TasksActivityTest {
         onView(withId(R.id.menu_delete)).perform(click())
 
         // Verify only one task was deleted
-        //onView(withId(R.id.menu_filter)).perform(click())
         onView(withText(TasksFilterType.ALL_TASKS.toString())).perform(click())
         onView(withText("TITLE1")).check(matches(isDisplayed()))
         onView(withText("TITLE2")).check(doesNotExist())
