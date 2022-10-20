@@ -21,7 +21,7 @@ object ServiceLocator {
 
     fun provideTasksRepository(context: Context): TasksRepository {
         synchronized(this) {
-            return tasksRepository ?: createTasksRepository(context)
+            return tasksRepository ?: tasksRepository ?: createTasksRepository(context)
         }
     }
 
