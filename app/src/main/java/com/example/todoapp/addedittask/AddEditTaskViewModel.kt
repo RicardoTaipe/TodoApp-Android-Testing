@@ -1,8 +1,16 @@
 package com.example.todoapp.addedittask
 
+import android.app.AlarmManager
+import android.app.Application
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.core.app.AlarmManagerCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.Event
 import com.example.todoapp.R
@@ -10,13 +18,22 @@ import com.example.todoapp.data.Result
 import com.example.todoapp.data.Task
 import com.example.todoapp.domain.GetTaskUseCase
 import com.example.todoapp.domain.SaveTaskUseCase
+import com.example.todoapp.receiver.AlarmReceiver
 import com.example.todoapp.tasks.TaskPriority
+import com.example.todoapp.util.cancelNotifications
 import kotlinx.coroutines.launch
+import java.util.*
 
 class AddEditTaskViewModel(
     private val getTaskUseCase: GetTaskUseCase,
-    private val saveUseCase: SaveTaskUseCase
-) : ViewModel() {
+    private val saveUseCase: SaveTaskUseCase,
+    application: Application
+) : AndroidViewModel(application) {
+    var minute: Int? = null
+    var hour: Int? = null
+    private lateinit var notifyPendingIntent: PendingIntent
+    private val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val notifyIntent = Intent(application, AlarmReceiver::class.java)
 
     // Two-way databinding, exposing MutableLiveData
     val title = MutableLiveData<String>()
@@ -42,6 +59,40 @@ class AddEditTaskViewModel(
     private var isDataLoaded = false
 
     private var taskCompleted = false
+
+    private fun saveTime() {
+        with(NotificationManagerCompat.from(getApplication())) {
+            cancelNotifications()
+        }
+        if (hour == null || minute == null) return
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, hour!!)
+            set(Calendar.MINUTE, minute!!)
+            set(Calendar.SECOND, 0)
+        }
+
+        notifyIntent.putExtra(Companion.TASK_NAME, title.value)
+        notifyPendingIntent = Intent(getApplication(), AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(
+                getApplication(),
+                System.currentTimeMillis().toInt(),
+                notifyIntent,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                } else {
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                }
+            )
+        }
+        AlarmManagerCompat.setExactAndAllowWhileIdle(
+            alarmManager,
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            notifyPendingIntent
+        )
+    }
+
 
     fun start(taskId: String?) {
         if (_dataLoading.value == true) {
@@ -108,6 +159,7 @@ class AddEditTaskViewModel(
         val currentTaskId = taskId
         if (isNewTask || currentTaskId == null) {
             createTask(Task(currentTitle, currentDescription, priority = currentPriority))
+            saveTime()
         } else {
             val task = Task(
                 currentTitle,
@@ -137,6 +189,11 @@ class AddEditTaskViewModel(
             saveUseCase(task)
             _taskUpdatedEvent.value = Event(Unit)
         }
+    }
+
+    companion object {
+        //region timer related
+        const val TASK_NAME = "TASK_NAME"
     }
 
 }

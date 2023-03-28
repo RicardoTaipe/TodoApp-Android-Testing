@@ -54,7 +54,7 @@ class TasksViewModel(
     val newTaskEvent: LiveData<Event<Unit>> = _newTaskEvent
 
     // This LiveData depends on another so we can use a transformation.
-    val empty: LiveData<Boolean> = Transformations.map(_items) {
+    val empty: LiveData<Boolean> = _items.map {
         it.isEmpty()
     }
 

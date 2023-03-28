@@ -70,6 +70,11 @@
     <string name="low">LOW</string>
     <string name="medium">MEDIUM</string>
     <string name="high">HIGH</string>
+    <string name="notification_channel_id">notification_channel_id</string>
+    <string name="notification_title">TODO APP</string>
+    <string name="notification_channel_description">time for note</string>
+    <string name="notification_channel_name">channel_name</string>
+    <string name="snooze">SNOOZE</string>
 
     <string-array name="note_color_array">
         <item>#A0ACA0</item>

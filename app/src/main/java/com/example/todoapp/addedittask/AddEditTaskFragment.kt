@@ -1,5 +1,6 @@
 package com.example.todoapp.addedittask
 
+import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,8 +23,9 @@ class AddEditTaskFragment : Fragment() {
 
     private val args: AddEditTaskFragmentArgs by navArgs()
 
-    private val viewModel by viewModels<AddEditTaskViewModel>{
-        AddEditTaskViewModelFactory((requireContext().applicationContext as TodoApplication).taskRepository)
+    private val viewModel by viewModels<AddEditTaskViewModel> {
+        val application = requireContext().applicationContext
+        AddEditTaskViewModelFactory((application as TodoApplication).taskRepository, application)
     }
 
     override fun onCreateView(
