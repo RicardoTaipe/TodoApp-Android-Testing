@@ -2,16 +2,12 @@ package com.example.todoapp.addedittask
 
 import android.app.AlarmManager
 import android.app.Application
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.CountDownTimer
-import android.os.SystemClock
+import android.os.Build
 import androidx.core.app.AlarmManagerCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,18 +20,14 @@ import com.example.todoapp.data.Task
 import com.example.todoapp.receiver.AlarmReceiver
 import com.example.todoapp.tasks.TaskPriority
 import com.example.todoapp.util.cancelNotifications
-import com.example.todoapp.util.sendNotification
 import kotlinx.coroutines.launch
 import java.util.*
 
 class AddEditTaskViewModel(application: Application) : AndroidViewModel(application) {
-    //region timer related
-    private val REQUEST_CODE = 0
-    private val TRIGGER_TIME = "TRIGGER_AT"
     var minute: Int? = null
     var hour: Int? = null
     private val second: Long = 1_000L
-    private var notifyPendingIntent: PendingIntent
+    private lateinit var notifyPendingIntent: PendingIntent
     private val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val notifyIntent = Intent(application, AlarmReceiver::class.java)
 
@@ -68,15 +60,6 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
 
     private var taskCompleted = false
 
-    init {
-        notifyPendingIntent = PendingIntent.getBroadcast(
-            getApplication(),
-            REQUEST_CODE,
-            notifyIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-    }
-
     private fun saveTime() {
         with(NotificationManagerCompat.from(getApplication())) {
             cancelNotifications()
@@ -89,6 +72,19 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
             set(Calendar.SECOND, 0)
         }
 
+        notifyIntent.putExtra(Companion.TASK_NAME, title.value)
+        notifyPendingIntent = Intent(getApplication(), AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(
+                getApplication(),
+                System.currentTimeMillis().toInt(),
+                notifyIntent,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                } else {
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                }
+            )
+        }
         AlarmManagerCompat.setExactAndAllowWhileIdle(
             alarmManager,
             AlarmManager.RTC_WAKEUP,
@@ -192,6 +188,11 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
             tasksRepository.saveTask(task)
             _taskUpdatedEvent.value = Event(Unit)
         }
+    }
+
+    companion object {
+        //region timer related
+        const val TASK_NAME = "TASK_NAME"
     }
 
 }

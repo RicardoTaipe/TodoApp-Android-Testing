@@ -1,10 +1,10 @@
 package com.example.todoapp.util
 
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.todoapp.R
@@ -13,15 +13,8 @@ import com.example.todoapp.tasks.TasksActivity
 
 // Notification ID.
 private const val NOTIFICATION_ID = 0
-private val REQUEST_CODE = 0
-private val FLAGS = 0
+private const val REQUEST_CODE = 0
 
-
-/**
- * Builds and delivers the notification.
- *
- * @param context, activity context.
- */
 fun NotificationManagerCompat.sendNotification(messageBody: String, applicationContext: Context) {
 
     val intent = Intent(applicationContext, TasksActivity::class.java).apply {
@@ -34,7 +27,11 @@ fun NotificationManagerCompat.sendNotification(messageBody: String, applicationC
             NOTIFICATION_ID,
             intent,
             // you don’t want to create a new notification but to update if there is an existing one
-            PendingIntent.FLAG_UPDATE_CURRENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
         )
     val image = BitmapFactory.decodeResource(
         applicationContext.resources,
@@ -49,7 +46,11 @@ fun NotificationManagerCompat.sendNotification(messageBody: String, applicationC
         applicationContext,
         REQUEST_CODE,
         snoozeIntent,
-        FLAGS
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
     )
 
 
