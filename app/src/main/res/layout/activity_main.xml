@@ -24,14 +24,13 @@
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:elevation="0dp">
+                android:fitsSystemWindows="true">
 
-                <androidx.appcompat.widget.Toolbar
+                <com.google.android.material.appbar.MaterialToolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="?attr/actionBarSize"
-                    style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+                    android:layout_height="?attr/actionBarSize" />
+
             </com.google.android.material.appbar.AppBarLayout>
 
             <androidx.fragment.app.FragmentContainerView
