@@ -1,7 +1,6 @@
 package com.example.todoapp
 
 import android.app.Application
-import androidx.viewbinding.BuildConfig
 import com.example.todoapp.data.source.TasksRepository
 import timber.log.Timber
 import timber.log.Timber.DebugTree
