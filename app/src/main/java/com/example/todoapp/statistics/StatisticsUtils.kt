@@ -7,7 +7,7 @@ import com.example.todoapp.data.Task
  */
 internal fun getActiveAndCompletedStats(tasks: List<Task>?): StatsResult {
 
-    return if (tasks == null || tasks.isEmpty()) {
+    return if (tasks.isNullOrEmpty()) {
         StatsResult(0f, 0f)
     } else {
         val totalTasks = tasks.size

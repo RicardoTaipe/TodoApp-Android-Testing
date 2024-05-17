@@ -41,11 +41,11 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun animateBars() {
-        viewModel.activeTasksPercent.observe(viewLifecycleOwner) {
-            animateProgress(binding.statsActiveIndicator, it)
+        viewModel.activeTasksPercent.observe(viewLifecycleOwner) { progress ->
+            animateProgress(binding.statsActiveIndicator, progress)
         }
-        viewModel.completedTasksPercent.observe(viewLifecycleOwner) {
-            animateProgress(binding.statsCompletedIndicator, it)
+        viewModel.completedTasksPercent.observe(viewLifecycleOwner) { progress ->
+            animateProgress(binding.statsCompletedIndicator, progress)
         }
     }
 
