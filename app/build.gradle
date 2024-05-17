@@ -66,7 +66,7 @@ dependencies {
     //for livedata
     testImplementation "androidx.arch.core:core-testing:2.2.0"
     //test coroutines
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1'
 
     // Optional -- Robolectric environment
     testImplementation "androidx.test:core:1.4.0"
@@ -76,8 +76,8 @@ dependencies {
 
     ///
     androidTestImplementation "junit:junit:4.13.2"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
-    androidTestImplementation "androidx.test:core:1.4.0"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1"
+    androidTestImplementation "androidx.test:core:1.5.0"
     debugImplementation "androidx.fragment:fragment-testing:1.5.6"
     androidTestImplementation "androidx.test:runner:1.5.2"
     androidTestImplementation "androidx.test:rules:1.5.0"
