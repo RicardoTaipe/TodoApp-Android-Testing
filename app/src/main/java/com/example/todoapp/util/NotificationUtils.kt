@@ -39,7 +39,7 @@ fun NotificationManagerCompat.sendNotification(messageBody: String, applicationC
     )
     val bigPicStyle = NotificationCompat.BigPictureStyle()
         .bigPicture(image)
-        .bigLargeIcon(null)
+        //.bigLargeIcon(null)
 
     val snoozeIntent = Intent(applicationContext, SnoozeReceiver::class.java)
     val snoozePendingIntent: PendingIntent = PendingIntent.getBroadcast(
