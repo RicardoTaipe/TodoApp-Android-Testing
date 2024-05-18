@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import com.example.todoapp.Event
 import com.example.todoapp.R
 import com.example.todoapp.ScrollChildSwipeRefreshLayout
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -24,6 +25,7 @@ fun View.showSnackbar(snackbarText: String, timeLength: Int) {
                 EspressoIdlingResource.decrement()
             }
         })
+        animationMode = BaseTransientBottomBar.ANIMATION_MODE_SLIDE
         show()
     }
 }
