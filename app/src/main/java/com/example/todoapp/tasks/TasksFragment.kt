@@ -74,7 +74,7 @@ class TasksFragment : Fragment(), MenuProvider {
     }
 
     private fun setupSnackbar() {
-        view?.setupSnackbar(viewLifecycleOwner, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+        view?.setupSnackbar(viewLifecycleOwner, viewModel.snackbarText, Snackbar.LENGTH_SHORT, binding.addTaskFab)
         arguments?.let {
             viewModel.showEditResultMessage(args.userMessage)
         }
